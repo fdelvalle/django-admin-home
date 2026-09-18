@@ -1,0 +1,88 @@
+{% load i18n static %}
+{% comment %}
+django-admin-home sidebar navigation.
+
+  - Header with a brand slot (admin_home/_brand.html) + collapse toggle
+  - Sections grouped by app
+  - Active item highlighted (marked via JS from the current route)
+  - Per-item favorites (star), toggled via AJAX
+  - Line icons (SVG sprite), following currentColor
+
+Data comes from django_admin_home.install via each_context:
+  - admin_home_menu_tree: [{key,name,icon,url,is_favorite, models:[{key,name,icon,url,is_favorite}]}]
+  - admin_home_menu_favorites: [{key,name,icon,url,parent}]
+{% endcomment %}
+
+{% include "admin_home/_icon_sprite.html" %}
+
+<nav class="admin-home-sidebar" id="admin-home-sidebar"
+     data-toggle-favorite-url="{% url 'admin:admin_home_toggle_favorite' %}"
+     data-track-access-url="{% url 'admin:admin_home_track_access' %}"
+     aria-label="{% trans 'Main menu' %}">
+
+    <div class="admin-home-nav-header">
+        <a class="admin-home-nav-brand" href="{% url 'admin:index' %}">
+            {% include "admin_home/_brand.html" %}
+        </a>
+        <button id="admin-home-nav-toggle" class="admin-home-nav-toggle" type="button"
+                aria-label="{% trans 'Collapse/expand menu' %}" title="{% trans 'Collapse/expand menu' %}">
+            <svg class="admin-home-icon admin-home-toggle-collapse" aria-hidden="true"><use href="#i-menu-collapse"></use></svg>
+            <svg class="admin-home-icon admin-home-toggle-expand" aria-hidden="true"><use href="#i-menu-expand"></use></svg>
+        </button>
+    </div>
+
+    <div class="admin-home-nav-body">
+        <a class="admin-home-nav-link admin-home-nav-home" href="{% url 'admin:index' %}" data-menu-key="home" title="{% trans 'Home' %}">
+            <span class="admin-home-nav-icon"><svg class="admin-home-icon" aria-hidden="true"><use href="#i-home"></use></svg></span>
+            <span class="admin-home-nav-label">{% trans "Home" %}</span>
+        </a>
+
+        {% if admin_home_menu_favorites %}
+        <div class="admin-home-nav-section admin-home-nav-favorites">
+            <div class="admin-home-nav-section-title">
+                <svg class="admin-home-icon" aria-hidden="true"><use href="#i-star-filled"></use></svg>
+                <span>{% trans "Favorites" %}</span>
+            </div>
+            {% for fav in admin_home_menu_favorites %}
+            <div class="admin-home-nav-item" data-url="{{ fav.url }}">
+                <a class="admin-home-nav-link" href="{{ fav.url }}" data-menu-key="{{ fav.key }}" title="{{ fav.name }}"{% if fav.new_tab %} target="_blank" rel="noopener"{% endif %}>
+                    <span class="admin-home-nav-icon"><svg class="admin-home-icon" aria-hidden="true"><use href="#i-{{ fav.icon }}"></use></svg></span>
+                    <span class="admin-home-nav-label">{{ fav.name }}</span>
+                </a>
+                <button class="admin-home-star is-favorite" type="button" data-menu-key="{{ fav.key }}"
+                        aria-pressed="true" title="{% trans 'Remove from favorites' %}" aria-label="{% trans 'Remove from favorites' %}">
+                    <svg class="admin-home-icon admin-home-star-on" aria-hidden="true"><use href="#i-star-filled"></use></svg>
+                    <svg class="admin-home-icon admin-home-star-off" aria-hidden="true"><use href="#i-star"></use></svg>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% for app in admin_home_menu_tree %}
+        <div class="admin-home-nav-section admin-home-nav-group" data-app="{{ app.key }}" aria-collapsed="true">
+            <button class="admin-home-nav-group-header" type="button" aria-expanded="false" title="{{ app.name }}">
+                <span class="admin-home-nav-icon"><svg class="admin-home-icon" aria-hidden="true"><use href="#i-{{ app.icon }}"></use></svg></span>
+                <span class="admin-home-nav-label">{{ app.name }}</span>
+                <svg class="admin-home-icon admin-home-caret" aria-hidden="true"><use href="#i-chevron"></use></svg>
+            </button>
+            <div class="admin-home-nav-group-items">
+                {% for model in app.models %}
+                <div class="admin-home-nav-item" data-url="{{ model.url }}">
+                    <a class="admin-home-nav-link" href="{{ model.url }}" data-menu-key="{{ model.key }}" title="{{ model.name }}"{% if model.new_tab %} target="_blank" rel="noopener"{% endif %}>
+                        <span class="admin-home-nav-icon"><svg class="admin-home-icon" aria-hidden="true"><use href="#i-{{ model.icon }}"></use></svg></span>
+                        <span class="admin-home-nav-label">{{ model.name }}</span>
+                    </a>
+                    <button class="admin-home-star {% if model.is_favorite %}is-favorite{% endif %}" type="button"
+                            data-menu-key="{{ model.key }}" aria-pressed="{% if model.is_favorite %}true{% else %}false{% endif %}"
+                            title="{% trans 'Favorite' %}" aria-label="{% trans 'Favorite' %}">
+                        <svg class="admin-home-icon admin-home-star-on" aria-hidden="true"><use href="#i-star-filled"></use></svg>
+                        <svg class="admin-home-icon admin-home-star-off" aria-hidden="true"><use href="#i-star"></use></svg>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</nav>

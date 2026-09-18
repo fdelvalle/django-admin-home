@@ -1,0 +1,332 @@
+/* =====================================================================
+   django-admin-home — home dashboard
+   Most-accessed + favorites cards, modern responsive grid.
+   ===================================================================== */
+
+:root {
+    --admin-home-text: #1f2430;
+    --admin-home-text-muted: #6b7280;
+    --admin-home-border: #e5e7eb;
+    --admin-home-bg-card: #f3f4f6;
+    --admin-home-bg-hover: #eef0f3;
+    --admin-home-accent-2: #4F46E5;   /* stars, highlight border, favorite bg */
+    --admin-home-accent-3: #4338CA;   /* hero gradient, section icons, badges */
+}
+
+/* Django applies `.dashboard #content { width: 600px }`; force full width. */
+.admin-home-page.dashboard #content,
+.admin-home-page #content,
+.admin-home-page #content.colM {
+    width: auto !important;
+    max-width: none !important;
+    padding: 20px 28px 40px;
+}
+
+.admin-home-wrap {
+    --card-radius: 14px;
+    color: var(--admin-home-text);
+    padding: 0 0 40px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.admin-home-page #content-main,
+.admin-home-page #content-main > .admin-home-wrap { width: 100%; box-sizing: border-box; }
+
+/* Hero */
+.admin-home-hero {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: linear-gradient(120deg, var(--admin-home-accent-3) 0%, #6366F1 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 26px;
+    box-shadow: 0 10px 24px rgba(67, 56, 202, .22);
+    position: relative;
+    overflow: hidden;
+}
+.admin-home-hero::after {
+    content: "";
+    position: absolute;
+    right: -40px; top: -40px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, var(--admin-home-accent-2) 0%, transparent 70%);
+    opacity: .35;
+}
+.admin-home-hero-text h1 { margin: 0 0 6px; font-size: 26px; font-weight: 700; color: #fff; }
+.admin-home-hero-text p { margin: 0; opacity: .92; font-size: 14px; }
+
+/* Sections */
+.admin-home-section { margin-bottom: 30px; }
+.admin-home-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--admin-home-text-muted);
+    margin: 0 0 14px;
+}
+.admin-home-section-title .admin-home-icon { width: 18px; height: 18px; color: var(--admin-home-accent-3); }
+
+/* Card grid */
+.admin-home-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+}
+@media (min-width: 1500px) {
+    .admin-home-card-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+}
+.admin-home-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #fff;
+    border: 1px solid var(--admin-home-border);
+    border-radius: var(--card-radius);
+    padding: 18px 16px;
+    text-decoration: none !important;
+    color: var(--admin-home-text) !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,.05);
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    overflow: hidden;
+}
+.admin-home-card::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--admin-home-accent-2);
+    opacity: 0;
+    transition: opacity .16s ease;
+}
+.admin-home-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(0,0,0,.12);
+    border-color: var(--admin-home-accent-3);
+}
+.admin-home-card:hover::before { opacity: 1; }
+
+.admin-home-card-icon {
+    flex: 0 0 46px;
+    width: 46px; height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(67, 56, 202, .10);
+    color: var(--admin-home-accent-3);
+}
+.admin-home-card-icon .admin-home-icon { width: 24px; height: 24px; }
+.admin-home-card--fav .admin-home-card-icon { background: rgba(79, 70, 229, .16); color: var(--admin-home-accent-2); }
+
+.admin-home-card-body { display: flex; flex-direction: column; min-width: 0; }
+.admin-home-card-name {
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.admin-home-card-parent { font-size: 12px; color: var(--admin-home-text-muted); }
+
+.admin-home-card-count {
+    margin-left: auto;
+    background: var(--admin-home-accent-3);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    flex: 0 0 auto;
+}
+
+.admin-home-card .admin-home-star {
+    margin-left: auto;
+    width: 32px; height: 32px;
+    background: none; border: none; cursor: pointer;
+    color: var(--admin-home-text-muted);
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+    transition: color .15s ease, transform .15s ease;
+}
+.admin-home-card .admin-home-star:hover { color: var(--admin-home-accent-2); transform: scale(1.15); }
+.admin-home-card .admin-home-star .admin-home-star-on { display: none; color: var(--admin-home-accent-2); }
+.admin-home-card .admin-home-star.is-favorite .admin-home-star-on { display: inline-block; }
+.admin-home-card .admin-home-star.is-favorite .admin-home-star-off { display: none; }
+.admin-home-card .admin-home-star.is-busy { opacity: .5; pointer-events: none; }
+
+/* Empty state */
+.admin-home-empty {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 26px;
+    background: var(--admin-home-bg-card);
+    border: 1px dashed var(--admin-home-border);
+    border-radius: var(--card-radius);
+    color: var(--admin-home-text-muted);
+}
+.admin-home-empty .admin-home-icon { width: 30px; height: 30px; opacity: .6; flex: 0 0 auto; }
+.admin-home-empty p { margin: 0; font-size: 14px; }
+
+/* Section bar (title + right-aligned controls) */
+.admin-home-section-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+.admin-home-section-bar .admin-home-section-title { margin: 0; }
+
+/* Pill (switch) toggling the masonry layout */
+.admin-home-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--admin-home-text-muted);
+}
+.admin-home-pill-track {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    border-radius: 999px;
+    background: var(--admin-home-border);
+    transition: background .18s ease;
+    flex: 0 0 auto;
+}
+.admin-home-pill-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,.25);
+    transition: transform .18s ease;
+}
+.admin-home-pill[aria-checked="true"] .admin-home-pill-track { background: var(--admin-home-accent-3); }
+.admin-home-pill[aria-checked="true"] .admin-home-pill-thumb { transform: translateX(18px); }
+.admin-home-pill:hover { color: var(--admin-home-accent-3); }
+.admin-home-pill:focus-visible { outline: 2px solid var(--admin-home-accent-3); outline-offset: 2px; }
+
+/* All modules */
+.admin-home-modules {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    align-items: start;
+}
+
+/* Masonry layout — enabled via .is-masonry. */
+.admin-home-modules.is-masonry {
+    display: block;
+    column-width: 280px;
+    column-gap: 16px;
+}
+.admin-home-modules.is-masonry .admin-home-module {
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    margin: 0 0 16px;
+    display: flow-root;
+    width: 100%;
+    box-sizing: border-box;
+}
+.admin-home-module {
+    background: #fff;
+    border: 1px solid var(--admin-home-border);
+    border-radius: var(--card-radius);
+    padding: 14px 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.04);
+}
+.admin-home-module-head {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 700; font-size: 14px;
+    padding-bottom: 10px; margin-bottom: 8px;
+    border-bottom: 1px solid var(--admin-home-border);
+    color: var(--admin-home-accent-3);
+}
+.admin-home-module-head .admin-home-icon { width: 20px; height: 20px; }
+
+/* Remove any marker (bullets/squares) the admin's base.css applies. */
+.admin-home-module-list,
+.admin-home-module-list li {
+    list-style: none !important;
+    list-style-type: none !important;
+    list-style-image: none !important;
+    margin: 0;
+    padding: 0;
+}
+.admin-home-module-list li::marker { content: "" !important; }
+.admin-home-module-list li::before { content: none !important; display: none !important; }
+.admin-home-module-list a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 6px;
+    border-radius: 8px;
+    text-decoration: none !important;
+    color: var(--admin-home-text) !important;
+    font-size: 13px;
+}
+.admin-home-module-list a:hover { background: var(--admin-home-bg-hover); }
+.admin-home-module-list .admin-home-icon { width: 18px; height: 18px; color: var(--admin-home-text-muted); flex: 0 0 18px; }
+
+/* =====================================================================
+   Dark mode
+   ===================================================================== */
+[data-theme="dark"] .admin-home-card,
+[data-theme="dark"] .admin-home-module { background: #242429; border-color: #3a3a44; }
+[data-theme="dark"] .admin-home-card,
+[data-theme="dark"] .admin-home-card-name,
+[data-theme="dark"] .admin-home-module-list a { color: #ECECF1 !important; }
+[data-theme="dark"] .admin-home-card-parent { color: #B9B9C6; }
+[data-theme="dark"] .admin-home-card-icon { background: rgba(185,169,238,.15); color: #cbbcff; }
+[data-theme="dark"] .admin-home-card--fav .admin-home-card-icon { background: rgba(129,140,248,.2); color: #a5b4fc; }
+[data-theme="dark"] .admin-home-section-title { color: #C6C6D2; }
+[data-theme="dark"] .admin-home-section-title .admin-home-icon { color: #b9a9ee; }
+[data-theme="dark"] .admin-home-module-head { color: #b9a9ee; border-bottom-color: #3a3a44; }
+[data-theme="dark"] .admin-home-module-list .admin-home-icon { color: #B9B9C6; }
+[data-theme="dark"] .admin-home-empty { background: #242429; border-color: #3a3a44; color: #B9B9C6; }
+[data-theme="dark"] .admin-home-module-list a:hover { background: #33333b; }
+[data-theme="dark"] .admin-home-card-count { background: #6a5aa0; }
+[data-theme="dark"] .admin-home-pill { color: #C6C6D2; }
+[data-theme="dark"] .admin-home-pill-track { background: #3a3a44; }
+[data-theme="dark"] .admin-home-pill[aria-checked="true"] .admin-home-pill-track { background: #6a5aa0; }
+[data-theme="dark"] .admin-home-pill:hover { color: #b9a9ee; }
+
+@media (prefers-color-scheme: dark) {
+    html[data-theme="auto"] .admin-home-card,
+    html[data-theme="auto"] .admin-home-module { background: #242429; border-color: #3a3a44; }
+    html[data-theme="auto"] .admin-home-card,
+    html[data-theme="auto"] .admin-home-card-name,
+    html[data-theme="auto"] .admin-home-module-list a { color: #ECECF1 !important; }
+    html[data-theme="auto"] .admin-home-card-parent { color: #B9B9C6; }
+    html[data-theme="auto"] .admin-home-card-icon { background: rgba(185,169,238,.15); color: #cbbcff; }
+    html[data-theme="auto"] .admin-home-card--fav .admin-home-card-icon { background: rgba(129,140,248,.2); color: #a5b4fc; }
+    html[data-theme="auto"] .admin-home-section-title { color: #C6C6D2; }
+    html[data-theme="auto"] .admin-home-section-title .admin-home-icon { color: #b9a9ee; }
+    html[data-theme="auto"] .admin-home-module-head { color: #b9a9ee; border-bottom-color: #3a3a44; }
+    html[data-theme="auto"] .admin-home-module-list .admin-home-icon { color: #B9B9C6; }
+    html[data-theme="auto"] .admin-home-empty { background: #242429; border-color: #3a3a44; color: #B9B9C6; }
+    html[data-theme="auto"] .admin-home-module-list a:hover { background: #33333b; }
+    html[data-theme="auto"] .admin-home-pill { color: #C6C6D2; }
+    html[data-theme="auto"] .admin-home-pill-track { background: #3a3a44; }
+    html[data-theme="auto"] .admin-home-pill[aria-checked="true"] .admin-home-pill-track { background: #6a5aa0; }
+    html[data-theme="auto"] .admin-home-pill:hover { color: #b9a9ee; }
+}

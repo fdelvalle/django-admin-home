@@ -1,0 +1,124 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% comment %}
+django-admin-home dashboard.
+
+Extra context (from django_admin_home.install.index):
+  - admin_home_most_accessed: [{key,name,icon,url,parent,access_count}]
+  - admin_home_favorite_cards: [{key,name,icon,url,parent}]
+{% endcomment %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'django_admin_home/css/home.css' %}">
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} dashboard admin-home-page{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block content %}
+{% trans "Favorites" as fav_label %}
+<script>window.ADMIN_HOME_I18N = Object.assign(window.ADMIN_HOME_I18N || {}, {favorites: "{{ fav_label|escapejs }}"});</script>
+<div class="admin-home-wrap"
+     data-toggle-favorite-url="{% url 'admin:admin_home_toggle_favorite' %}"
+     data-track-access-url="{% url 'admin:admin_home_track_access' %}">
+
+    <header class="admin-home-hero">
+        <div class="admin-home-hero-text">
+            <h1>{% blocktrans with name=request.user.first_name|default:request.user.get_username %}Hello, {{ name }}{% endblocktrans %}</h1>
+            <p>{% trans "Welcome back. Here are your most used shortcuts and favorites." %}</p>
+        </div>
+    </header>
+
+    {% if admin_home_favorite_cards %}
+    <section class="admin-home-section admin-home-favorites-section">
+        <h2 class="admin-home-section-title">
+            <svg class="admin-home-icon" aria-hidden="true"><use href="#i-star-filled"></use></svg>
+            {% trans "Favorites" %}
+        </h2>
+        <div class="admin-home-card-grid">
+            {% for card in admin_home_favorite_cards %}
+            <a class="admin-home-card admin-home-card--fav" href="{{ card.url }}" data-menu-key="{{ card.key }}"{% if card.new_tab %} target="_blank" rel="noopener"{% endif %}>
+                <span class="admin-home-card-icon"><svg class="admin-home-icon" aria-hidden="true"><use href="#i-{{ card.icon }}"></use></svg></span>
+                <span class="admin-home-card-body">
+                    <span class="admin-home-card-name">{{ card.name }}</span>
+                    {% if card.parent %}<span class="admin-home-card-parent">{{ card.parent }}</span>{% endif %}
+                </span>
+                <button class="admin-home-star is-favorite" type="button" data-menu-key="{{ card.key }}"
+                        aria-pressed="true" title="{% trans 'Remove from favorites' %}"
+                        aria-label="{% trans 'Remove from favorites' %}" onclick="event.preventDefault();event.stopPropagation();">
+                    <svg class="admin-home-icon admin-home-star-on" aria-hidden="true"><use href="#i-star-filled"></use></svg>
+                    <svg class="admin-home-icon admin-home-star-off" aria-hidden="true"><use href="#i-star"></use></svg>
+                </button>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <section class="admin-home-section">
+        <h2 class="admin-home-section-title">
+            <svg class="admin-home-icon" aria-hidden="true"><use href="#i-chart-line"></use></svg>
+            {% trans "Most accessed" %}
+        </h2>
+        {% if admin_home_most_accessed %}
+        <div class="admin-home-card-grid">
+            {% for card in admin_home_most_accessed %}
+            <a class="admin-home-card" href="{{ card.url }}" data-menu-key="{{ card.key }}"{% if card.new_tab %} target="_blank" rel="noopener"{% endif %}>
+                <span class="admin-home-card-icon"><svg class="admin-home-icon" aria-hidden="true"><use href="#i-{{ card.icon }}"></use></svg></span>
+                <span class="admin-home-card-body">
+                    <span class="admin-home-card-name">{{ card.name }}</span>
+                    {% if card.parent %}<span class="admin-home-card-parent">{{ card.parent }}</span>{% endif %}
+                </span>
+                <span class="admin-home-card-count" title="{% trans 'Accesses' %}">{{ card.access_count }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="admin-home-empty">
+            <svg class="admin-home-icon" aria-hidden="true"><use href="#i-chart"></use></svg>
+            <p>{% trans "No accesses recorded yet. Browse the menus and your most used shortcuts will show up here." %}</p>
+        </div>
+        {% endif %}
+    </section>
+
+    <section class="admin-home-section">
+        <div class="admin-home-section-bar">
+            <h2 class="admin-home-section-title">
+                <svg class="admin-home-icon" aria-hidden="true"><use href="#i-folder"></use></svg>
+                {% trans "All modules" %}
+            </h2>
+            <button id="admin-home-masonry-toggle" class="admin-home-pill" type="button"
+                    role="switch" aria-checked="false"
+                    title="{% trans 'Group modules compactly' %}"
+                    aria-label="{% trans 'Group modules compactly' %}">
+                <span class="admin-home-pill-track"><span class="admin-home-pill-thumb"></span></span>
+                <span class="admin-home-pill-label">{% trans "Compact" %}</span>
+            </button>
+        </div>
+        <div class="admin-home-modules" id="admin-home-modules">
+            {% for app in admin_home_menu_tree %}
+            <div class="admin-home-module">
+                <div class="admin-home-module-head">
+                    <svg class="admin-home-icon" aria-hidden="true"><use href="#i-{{ app.icon }}"></use></svg>
+                    <span>{{ app.name }}</span>
+                </div>
+                <ul class="admin-home-module-list">
+                    {% for model in app.models %}
+                    <li>
+                        <a href="{{ model.url }}" data-menu-key="{{ model.key }}"{% if model.new_tab %} target="_blank" rel="noopener"{% endif %}>
+                            <svg class="admin-home-icon" aria-hidden="true"><use href="#i-{{ model.icon }}"></use></svg>
+                            {{ model.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}

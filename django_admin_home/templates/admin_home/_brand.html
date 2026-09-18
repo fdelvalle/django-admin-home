@@ -1,0 +1,6 @@
+{% comment %}
+Sidebar brand/logo slot. Override this template (place your own
+"admin_home/_brand.html" earlier in your project's template dirs) to show
+your own logo instead of the site header text.
+{% endcomment %}
+<span class="admin-home-brand-full">{{ site_header|default:"Django administration" }}</span>

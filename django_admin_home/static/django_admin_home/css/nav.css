@@ -1,0 +1,371 @@
+/* =====================================================================
+   django-admin-home — sidebar navigation
+   Light sidebar, sections grouped by app, highlighted active item, thin
+   line icons. Supports dark mode with adequate contrast.
+   ===================================================================== */
+
+:root {
+    --admin-home-nav-width: 280px;
+    --admin-home-nav-width-collapsed: 68px;
+
+    --admin-home-accent: #4F46E5;         /* active item background */
+    --admin-home-accent-ink: #ffffff;     /* text over the accent color */
+    --admin-home-nav-bg: #ffffff;
+    --admin-home-nav-header-bg: #ffffff;
+    --admin-home-nav-text: #3a4452;
+    --admin-home-nav-icon: #8a94a6;       /* grey line icon */
+    --admin-home-nav-title: #9aa3b2;      /* section titles */
+    --admin-home-nav-hover: #f4f5f7;
+    --admin-home-nav-border: #e7e9ee;
+    --admin-home-nav-active-bg: var(--admin-home-accent);
+    --admin-home-nav-active-ink: var(--admin-home-accent-ink);
+}
+
+/* ---------- Icons (thin line, inherit the surrounding color) ---------- */
+.admin-home-icon {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    flex: 0 0 auto;
+    vertical-align: middle;
+    color: inherit;
+    stroke: currentColor;
+    fill: none;
+}
+
+/* =====================================================================
+   Flex layout: fixed sidebar column + content filling the rest.
+   (replaces the native #nav-sidebar, so the flex rules live here)
+   ===================================================================== */
+.main { align-items: stretch; }
+.main > .admin-home-sidebar { flex: 0 0 var(--admin-home-nav-width); }
+.main > .admin-home-sidebar.is-collapsed { flex: 0 0 var(--admin-home-nav-width-collapsed); }
+.main > .admin-home-sidebar + .content {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: calc(100% - var(--admin-home-nav-width));
+}
+.main > .admin-home-sidebar.is-collapsed + .content {
+    max-width: calc(100% - var(--admin-home-nav-width-collapsed));
+}
+
+.main { background: var(--admin-home-nav-bg); }
+.main > .admin-home-sidebar { border-right: none; }
+.main > .admin-home-sidebar + .content {
+    background: var(--body-bg, #FCFCFC);
+    border-top-left-radius: 18px;
+    border-left: 1px solid var(--admin-home-nav-border);
+    border-top: 1px solid var(--admin-home-nav-border);
+}
+
+/* Breadcrumb bar acting as a "topbar" connecting header to sidebar/content. */
+div.breadcrumbs {
+    background: var(--admin-home-nav-bg) !important;
+    color: var(--admin-home-nav-text) !important;
+    border-bottom: none;
+    padding: 12px 16px;
+}
+div.breadcrumbs a { color: var(--admin-home-nav-text) !important; opacity: .85; }
+div.breadcrumbs a:hover { opacity: 1; text-decoration: underline; }
+
+.admin-home-sidebar {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    width: var(--admin-home-nav-width);
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--admin-home-nav-bg);
+    border-right: 1px solid var(--admin-home-nav-border);
+    padding: 0 0 24px;
+    box-sizing: border-box;
+    transition: flex-basis .18s ease, width .18s ease;
+    scrollbar-width: thin;
+    color: var(--admin-home-nav-text);
+}
+.admin-home-sidebar::-webkit-scrollbar { width: 8px; }
+.admin-home-sidebar::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 8px; }
+
+/* ---------- Sidebar header: brand + hamburger ---------- */
+.admin-home-nav-header {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    height: 56px;
+    padding: 0 14px;
+    background: var(--admin-home-nav-header-bg);
+    border-bottom: 1px solid var(--admin-home-nav-border);
+}
+.admin-home-nav-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none !important;
+    overflow: hidden;
+    min-width: 0;
+}
+.admin-home-sidebar .admin-home-nav-brand,
+.admin-home-sidebar a.admin-home-nav-brand:link,
+.admin-home-sidebar a.admin-home-nav-brand:visited { color: var(--admin-home-nav-text) !important; font-weight: 700; }
+.admin-home-brand-full { height: 26px; display: flex; align-items: center; white-space: nowrap; }
+
+.admin-home-nav-toggle {
+    flex: 0 0 auto;
+    width: 34px; height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--admin-home-nav-icon);
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+}
+.admin-home-nav-toggle:hover { background: var(--admin-home-nav-hover); color: var(--admin-home-nav-text); }
+.admin-home-nav-toggle .admin-home-icon { width: 24px; height: 24px; }
+.admin-home-toggle-expand { display: none; }
+
+/* ---------- Home (plain link) ---------- */
+.admin-home-nav-body { padding: 8px 10px 0; }
+
+.admin-home-nav-home {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+    color: var(--admin-home-nav-text) !important;
+    text-decoration: none !important;
+    font-weight: 600;
+    font-size: 14px;
+}
+.admin-home-nav-home:hover { background: var(--admin-home-nav-hover); }
+
+/* ---------- Sections ---------- */
+.admin-home-nav-section { margin-top: 6px; }
+
+.admin-home-nav-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 12px 6px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--admin-home-nav-title);
+}
+.admin-home-nav-section-title .admin-home-icon { color: var(--admin-home-accent); width: 15px; height: 15px; }
+
+.admin-home-nav-group + .admin-home-nav-group { margin-top: 2px; }
+.admin-home-nav-group-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 12px 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--admin-home-nav-title);
+    text-align: left;
+}
+.admin-home-nav-group-header:hover { color: var(--admin-home-nav-text); }
+.admin-home-nav-group-header .admin-home-nav-icon { width: 16px; flex: 0 0 16px; }
+.admin-home-nav-group-header .admin-home-icon { color: var(--admin-home-nav-icon); width: 16px; height: 16px; }
+
+.admin-home-caret {
+    margin-left: auto;
+    width: 15px; height: 15px;
+    transform: rotate(90deg);
+    transition: transform .18s ease;
+    opacity: .6;
+}
+.admin-home-nav-group[aria-collapsed="true"] .admin-home-caret { transform: rotate(0deg); }
+.admin-home-nav-group[aria-collapsed="true"] .admin-home-nav-group-items { display: none; }
+
+.admin-home-nav-group-items { padding: 0; }
+
+/* ---------- Items ---------- */
+.admin-home-nav-item {
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    margin: 1px 0;
+}
+.admin-home-nav-item:hover { background: var(--admin-home-nav-hover); }
+
+.admin-home-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 9px 12px;
+    color: var(--admin-home-nav-text) !important;
+    text-decoration: none !important;
+    border-radius: 8px;
+    font-size: 13.5px;
+    box-sizing: border-box;
+}
+.admin-home-nav-link .admin-home-nav-icon .admin-home-icon,
+.admin-home-nav-link > .admin-home-icon { color: var(--admin-home-nav-icon); }
+
+.admin-home-nav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    flex: 0 0 22px;
+}
+.admin-home-nav-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Active item (current route) */
+.admin-home-nav-item.is-active,
+.admin-home-nav-item.is-active:hover { background: var(--admin-home-nav-active-bg); }
+.admin-home-nav-item.is-active .admin-home-nav-link { color: var(--admin-home-nav-active-ink) !important; font-weight: 700; }
+.admin-home-nav-item.is-active .admin-home-nav-icon .admin-home-icon { color: var(--admin-home-nav-active-ink); }
+
+/* ---------- Favorites ---------- */
+.admin-home-nav-favorites { padding-bottom: 8px; margin-bottom: 4px; border-bottom: 1px solid var(--admin-home-nav-border); }
+
+.admin-home-star {
+    flex: 0 0 auto;
+    width: 30px; height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 6px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--admin-home-nav-icon);
+    border-radius: 6px;
+    transition: color .15s ease, transform .15s ease;
+}
+.admin-home-star:hover { color: var(--admin-home-accent); transform: scale(1.15); }
+.admin-home-star .admin-home-icon { fill: none; }
+.admin-home-star .admin-home-star-on { display: none; color: var(--admin-home-accent); }
+.admin-home-star .admin-home-star-off { display: inline-block; }
+.admin-home-star.is-favorite .admin-home-star-on { display: inline-block; }
+.admin-home-star.is-favorite .admin-home-star-off { display: none; }
+.admin-home-star.is-favorite .admin-home-star-on .admin-home-icon,
+.admin-home-star.is-favorite .admin-home-icon { fill: currentColor; }
+.admin-home-star.is-busy { opacity: .5; pointer-events: none; }
+.admin-home-nav-item.is-active .admin-home-star { color: var(--admin-home-nav-active-ink); }
+
+/* =====================================================================
+   Collapsed mode (icons only)
+   ===================================================================== */
+.admin-home-sidebar.is-collapsed { width: var(--admin-home-nav-width-collapsed); }
+.admin-home-sidebar.is-collapsed .admin-home-nav-label,
+.admin-home-sidebar.is-collapsed .admin-home-caret,
+.admin-home-sidebar.is-collapsed .admin-home-star,
+.admin-home-sidebar.is-collapsed .admin-home-nav-section-title { display: none; }
+.admin-home-sidebar.is-collapsed .admin-home-brand-full { display: none; }
+.admin-home-sidebar.is-collapsed .admin-home-toggle-collapse { display: none; }
+.admin-home-sidebar.is-collapsed .admin-home-toggle-expand { display: inline-block; }
+.admin-home-sidebar.is-collapsed .admin-home-nav-header {
+    flex-direction: column;
+    height: auto;
+    gap: 8px;
+    padding: 10px 0;
+    justify-content: center;
+}
+.admin-home-sidebar.is-collapsed .admin-home-nav-brand { justify-content: center; }
+.admin-home-sidebar.is-collapsed .admin-home-nav-group-header {
+    justify-content: center;
+    gap: 0;
+    padding: 8px 6px 4px;
+}
+.admin-home-sidebar.is-collapsed .admin-home-nav-group-header .admin-home-nav-label { display: none; }
+.admin-home-sidebar.is-collapsed .admin-home-nav-link,
+.admin-home-sidebar.is-collapsed .admin-home-nav-home {
+    justify-content: center;
+    gap: 0;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+.admin-home-sidebar.is-collapsed .admin-home-nav-item { position: relative; }
+
+/* Tooltip in collapsed mode */
+.admin-home-sidebar.is-collapsed .admin-home-nav-link::after {
+    content: attr(title);
+    position: absolute;
+    left: calc(var(--admin-home-nav-width-collapsed) - 12px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: #1f2430;
+    color: #fff;
+    padding: 5px 9px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .12s ease;
+    z-index: 30;
+    box-shadow: 0 4px 12px rgba(0,0,0,.25);
+}
+.admin-home-sidebar.is-collapsed .admin-home-nav-item:hover .admin-home-nav-link::after { opacity: 1; }
+
+/* =====================================================================
+   Dark mode
+   ===================================================================== */
+[data-theme="dark"] {
+    --admin-home-nav-bg: #1f1f26;
+    --admin-home-nav-header-bg: #1a1a20;
+    --admin-home-nav-text: #E7E7EE;
+    --admin-home-nav-icon: #C4C4D2;
+    --admin-home-nav-title: #9aa0b0;
+    --admin-home-nav-hover: #2c2c35;
+    --admin-home-nav-border: #33333d;
+}
+[data-theme="dark"] .admin-home-sidebar .admin-home-icon { color: var(--admin-home-nav-icon) !important; }
+[data-theme="dark"] .admin-home-nav-link,
+[data-theme="dark"] .admin-home-nav-home { color: var(--admin-home-nav-text) !important; }
+[data-theme="dark"] .admin-home-nav-section-title .admin-home-icon { color: var(--admin-home-accent) !important; }
+[data-theme="dark"] .admin-home-nav-item.is-active .admin-home-nav-link,
+[data-theme="dark"] .admin-home-nav-item.is-active .admin-home-icon { color: var(--admin-home-nav-active-ink) !important; }
+[data-theme="dark"] .admin-home-star:hover,
+[data-theme="dark"] .admin-home-star.is-favorite .admin-home-star-on { color: var(--admin-home-accent) !important; }
+
+@media (prefers-color-scheme: dark) {
+    html[data-theme="auto"] {
+        --admin-home-nav-bg: #1f1f26;
+        --admin-home-nav-header-bg: #1a1a20;
+        --admin-home-nav-text: #E7E7EE;
+        --admin-home-nav-icon: #C4C4D2;
+        --admin-home-nav-title: #9aa0b0;
+        --admin-home-nav-hover: #2c2c35;
+        --admin-home-nav-border: #33333d;
+    }
+    html[data-theme="auto"] .admin-home-sidebar .admin-home-icon { color: var(--admin-home-nav-icon) !important; }
+    html[data-theme="auto"] .admin-home-nav-link,
+    html[data-theme="auto"] .admin-home-nav-home { color: var(--admin-home-nav-text) !important; }
+    html[data-theme="auto"] .admin-home-nav-section-title .admin-home-icon { color: var(--admin-home-accent) !important; }
+    html[data-theme="auto"] .admin-home-nav-item.is-active .admin-home-nav-link,
+    html[data-theme="auto"] .admin-home-nav-item.is-active .admin-home-icon { color: var(--admin-home-nav-active-ink) !important; }
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+    .admin-home-sidebar { position: fixed; z-index: 100; height: 100vh; }
+    .main > .admin-home-sidebar + .content { max-width: 100%; }
+}
