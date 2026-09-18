@@ -31,6 +31,14 @@
     color: inherit;
     stroke: currentColor;
     fill: none;
+    /* The sprite's <symbol> elements share a <g stroke-width="2" ...>
+       wrapper in the <defs> for these presentation attributes, but a
+       <use>'s generated shadow tree does NOT inherit from that wrapper
+       (only from its own light-DOM ancestors) — so this has to be
+       declared here too, same as fill/stroke above. */
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 /* =====================================================================

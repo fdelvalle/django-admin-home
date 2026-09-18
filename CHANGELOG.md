@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.3
+
+- The shared `admin-home-icon` class (sidebar, home dashboard, user menu)
+  now also sets `stroke-width: 2; stroke-linecap: round; stroke-linejoin:
+  round`. Same root cause as the 0.2.2 fill/stroke fix: the sprite's
+  `<symbol>` elements share a `<g stroke-width="2" ...>` wrapper in the
+  `<defs>` for these presentation attributes, but a `<use>` instance's
+  generated shadow tree does not inherit from that wrapper — only from its
+  own light-DOM ancestors. Without this, every icon in the admin (not just
+  the user menu) rendered with the SVG-default 1px, square-cap stroke
+  instead of the intended bold 2px line-icon look.
+
 ## 0.2.2
 
 - Fixed the user menu icons rendering as solid black shapes instead of thin
