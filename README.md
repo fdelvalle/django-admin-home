@@ -26,6 +26,11 @@ no favorites or usage-based shortcuts. This package replaces both with:
 - A dependency-free, offline SVG icon set (no external font/CDN).
 - Defensive by design: any unexpected failure falls back to the native
   admin behaviour instead of breaking the page.
+- Two optional, drop-in extras that need no settings or Python wiring at
+  all — just CSS/JS — because they only touch Django's own native
+  markup: a collapsible changelist filter panel, and a floating
+  horizontal scrollbar for wide results tables (see "Optional extras"
+  below).
 
 ## Installation
 
@@ -108,6 +113,43 @@ native toggle (which this menu hides, in favour of the explicit picker).
 
 To add project-specific links to the menu (e.g. an internal tool), override
 the template `admin_home/_user_menu_extra_actions.html` (empty by default).
+
+### Optional extras: filter panel and floating scrollbar
+
+Two independent features that need no settings and no Python wiring —
+they only rewrite Django's own native markup on the changelist page, so
+just include their CSS/JS:
+
+```django
+<link rel="stylesheet" href="{% static 'django_admin_home/css/filter_panel.css' %}">
+<link rel="stylesheet" href="{% static 'django_admin_home/css/hscroll.css' %}">
+<script src="{% static 'django_admin_home/js/filter_panel.js' %}" defer></script>
+<script src="{% static 'django_admin_home/js/hscroll.js' %}" defer></script>
+```
+
+- **Filter panel**: turns the native `#changelist-filter` sidebar into a
+  collapsible panel with a header (funnel icon + title + toggle),
+  matching the main sidebar's look — including dark mode, since it reuses
+  the same `--admin-home-nav-*` tokens. Collapsed state persists in
+  `localStorage`.
+- **Floating scrollbar**: a bar fixed to the bottom of the viewport,
+  synced with a wide results table, so you don't have to scroll all the
+  way down to reach the table's own horizontal scrollbar. Only appears
+  when the table actually overflows and the table's own scrollbar isn't
+  already on screen.
+
+Both use the `admin_home/_icon_sprite.html` sprite (already included if
+you followed the sidebar setup above) and default to English labels
+("Filters", "Collapse/expand filters"). To translate them, set
+`window.ADMIN_HOME_I18N` with a `<script>` block that runs before these
+files load:
+
+```django
+<script>window.ADMIN_HOME_I18N = Object.assign(window.ADMIN_HOME_I18N || {}, {
+    filters: "{% trans 'Filters' %}",
+    toggleFilters: "{% trans 'Collapse/expand filters' %}"
+});</script>
+```
 
 ## Settings (all optional)
 

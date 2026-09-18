@@ -1,0 +1,257 @@
+/* =====================================================================
+   django-admin-home — collapsible changelist filter panel
+   Reorganizes Django's native #changelist-filter into a panel with a
+   header (funnel icon + title + collapse/expand button), mirroring the
+   admin-home sidebar. Reuses the same --admin-home-nav-* tokens as
+   nav.css so it always matches the sidebar's theme automatically.
+
+   Real Django 5.2 layout (change_list):
+     #changelist  (display:flex, align-items:flex-start)
+       .changelist-form-container  (flex:1 1 auto)   -> results table
+       #changelist-filter (nav, flex:0 0 240px, order:1) -> right panel
+   ===================================================================== */
+
+:root {
+    --admin-home-filter-width: 280px;
+    --admin-home-filter-width-collapsed: 64px;
+}
+
+/* Left content becomes a "card" with a rounded top-right corner, meeting
+   the filter panel's rounded top-left corner at the breadcrumb line. */
+#changelist .changelist-form-container {
+    background: var(--body-bg, #fcfcfc);
+    border-top-right-radius: 18px;
+    border-top: 1px solid var(--admin-home-nav-border, #e7e9ee);
+    border-right: 1px solid var(--admin-home-nav-border, #e7e9ee);
+    box-sizing: border-box;
+}
+
+#changelist { background: var(--admin-home-nav-bg, #fff); gap: 0; }
+
+#changelist #changelist-filter {
+    flex: 0 0 var(--admin-home-filter-width);
+    width: var(--admin-home-filter-width);
+    box-sizing: border-box;
+    margin: 0; /* remove Django's default margin-left: 30px */
+    background: var(--admin-home-nav-bg, #fff);
+    border-left: 1px solid var(--admin-home-nav-border, #e7e9ee);
+    border-right: none;
+    padding: 0 0 24px;
+    color: var(--admin-home-nav-text, #3a4452);
+    position: sticky;
+    top: 0;
+    align-self: stretch;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    transition: flex-basis 0.18s ease, width 0.18s ease;
+}
+#changelist #changelist-filter::-webkit-scrollbar { width: 8px; }
+#changelist #changelist-filter::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 8px; }
+
+/* ------------------------------------------------------------- header */
+
+#changelist-filter .admin-home-filter-header {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    height: 56px;
+    padding: 0 14px;
+    background: var(--admin-home-nav-header-bg, #fff);
+    border-bottom: 1px solid var(--admin-home-nav-border, #e7e9ee);
+    box-sizing: border-box;
+}
+#changelist-filter .admin-home-filter-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--admin-home-accent-ink, var(--admin-home-nav-text, #3a4452));
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+#changelist-filter .admin-home-filter-icon {
+    color: var(--admin-home-accent, #4f46e5);
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+}
+#changelist-filter .admin-home-filter-title-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Collapse/expand button: a single chevron, rotated via CSS. */
+#changelist-filter .admin-home-filter-toggle {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--admin-home-nav-icon, #8a94a6);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+#changelist-filter .admin-home-filter-toggle:hover {
+    background: var(--admin-home-nav-hover, #f4f5f7);
+    color: var(--admin-home-nav-text, #3a4452);
+}
+#changelist-filter .admin-home-filter-caret {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.18s ease;
+}
+/* Open: chevron points RIGHT (collapse towards the edge). */
+#changelist-filter .admin-home-filter-caret { transform: rotate(0deg); }
+/* Collapsed: chevron points LEFT (expand back). */
+#changelist-filter.is-collapsed .admin-home-filter-caret { transform: rotate(180deg); }
+
+/* Hide Django's native <h2>Filter</h2> in favor of the custom header. */
+#changelist-filter .admin-home-filter-body > h2,
+#changelist-filter > h2 { display: none; }
+
+/* ------------------------------------------------------------- body */
+
+#changelist-filter .admin-home-filter-body { padding: 8px 10px 0; }
+
+#changelist-filter #changelist-filter-extra-actions {
+    margin: 0 0 6px;
+    padding: 4px 2px 8px;
+    border-bottom: 1px solid var(--admin-home-nav-border, #e7e9ee);
+    font-size: 12px;
+}
+#changelist-filter #changelist-filter-extra-actions h3 { padding: 4px 12px; margin: 0; }
+#changelist-filter #changelist-filter-extra-actions a { color: var(--admin-home-nav-text, #3a4452) !important; opacity: 0.85; }
+#changelist-filter #changelist-filter-extra-actions a:hover { opacity: 1; }
+
+/* Each facet is a <details><summary>...</summary><ul>...</ul></details>.
+   The summary becomes the section title (same style as the sidebar). */
+#changelist-filter details { margin: 0 0 4px; }
+#changelist-filter details > summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 12px 6px;
+    margin: 0;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--admin-home-nav-title, #9aa3b2);
+    cursor: pointer;
+    list-style: none;
+}
+#changelist-filter details > summary::-webkit-details-marker { display: none; }
+#changelist-filter details > summary:hover { color: var(--admin-home-nav-text, #3a4452); }
+/* <details> caret drawn as a chevron. */
+#changelist-filter details > summary::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    margin-left: auto;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(-45deg);
+    transition: transform 0.18s ease;
+    opacity: 0.6;
+    order: 2;
+}
+#changelist-filter details[open] > summary::before { transform: rotate(45deg); }
+
+/* Same treatment for filters still using <h3> (older Django styles). */
+#changelist-filter h3 {
+    padding: 14px 12px 6px;
+    margin: 0;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--admin-home-nav-title, #9aa3b2);
+}
+
+/* Option lists */
+#changelist-filter ul {
+    list-style: none;
+    margin: 0 0 6px;
+    padding: 0;
+    border-bottom: none;
+}
+#changelist-filter li {
+    list-style: none;
+    margin: 1px 0;
+    padding: 0;
+    border-radius: 8px;
+    border-left: none;
+}
+#changelist-filter li:hover { background: var(--admin-home-nav-hover, #f4f5f7); }
+#changelist-filter li a {
+    display: block;
+    padding: 9px 12px;
+    color: var(--admin-home-nav-text, #3a4452) !important;
+    text-decoration: none !important;
+    border-radius: 8px;
+    font-size: 13.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: normal;
+}
+/* Selected option — same highlight as the sidebar's active item. */
+#changelist-filter li.selected {
+    background: var(--admin-home-nav-active-bg, var(--admin-home-accent, #4f46e5));
+    border-left: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+#changelist-filter li.selected:hover { background: var(--admin-home-nav-active-bg, var(--admin-home-accent, #4f46e5)); }
+#changelist-filter li.selected a {
+    color: var(--admin-home-nav-active-ink, var(--admin-home-accent-ink, #fff)) !important;
+    font-weight: 700;
+}
+
+/* =====================================================================
+   Collapsed mode: only the funnel shows (no title, no body, no caret)
+   ===================================================================== */
+#changelist #changelist-filter.is-collapsed {
+    flex: 0 0 var(--admin-home-filter-width-collapsed);
+    width: var(--admin-home-filter-width-collapsed);
+}
+#changelist-filter.is-collapsed .admin-home-filter-body,
+#changelist-filter.is-collapsed .admin-home-filter-title-text { display: none; }
+#changelist-filter.is-collapsed .admin-home-filter-header {
+    flex-direction: column;
+    height: auto;
+    gap: 10px;
+    padding: 12px 0;
+    justify-content: center;
+}
+#changelist-filter.is-collapsed .admin-home-filter-title { justify-content: center; }
+
+/* ------------------------------------------------------------- responsive */
+
+@media (max-width: 767px) {
+    #changelist #changelist-filter {
+        position: fixed;
+        right: 0;
+        top: 0;
+        z-index: 100;
+        height: 100vh;
+    }
+}
+
+@media print {
+    #changelist-filter .admin-home-filter-toggle { display: none !important; }
+}

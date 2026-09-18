@@ -1,0 +1,46 @@
+/* =====================================================================
+   django-admin-home — floating horizontal scrollbar
+   Stays fixed at the bottom of the viewport, always visible when the
+   results table (#changelist-form .results) is wider than its area.
+   Avoids having to scroll all the way down to reach the table's own
+   horizontal scrollbar.
+   ===================================================================== */
+
+.admin-home-hscroll {
+    position: fixed;
+    bottom: 0;
+    z-index: 90;
+    height: 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    background: var(--admin-home-nav-header-bg, #fff);
+    border-top: 1px solid var(--admin-home-nav-border, #e7e9ee);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+    /* left/width are set via JS to align with the table's own area */
+    scrollbar-width: auto;
+}
+
+/* Inner track reproducing the table's full width, forcing the scrollbar
+   to appear even though this element itself has no visible content. */
+.admin-home-hscroll-track { height: 1px; }
+
+.admin-home-hscroll::-webkit-scrollbar { height: 14px; }
+.admin-home-hscroll::-webkit-scrollbar-track { background: transparent; }
+.admin-home-hscroll::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.28);
+    border-radius: 8px;
+    border: 3px solid var(--admin-home-nav-header-bg, #fff);
+}
+.admin-home-hscroll::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.42); }
+
+/* Hidden when there is no overflow (controlled via JS [hidden]). */
+.admin-home-hscroll[hidden] { display: none; }
+
+/* Extra bottom space so the floating bar never covers the last row or
+   the paginator. */
+body.admin-home-has-hscroll #changelist .paginator,
+body.admin-home-has-hscroll #changelist-form .results { margin-bottom: 18px; }
+
+@media print {
+    .admin-home-hscroll { display: none !important; }
+}

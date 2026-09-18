@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.0
+
+- Added two optional, settings-free extras: a collapsible changelist
+  filter panel (`filter_panel.css`/`.js`) and a floating horizontal
+  scrollbar for wide results tables (`hscroll.css`/`.js`). Both only
+  rewrite Django's own native markup (`#changelist-filter`,
+  `#changelist-form .results`), reuse the existing `--admin-home-nav-*`
+  theme tokens (so dark mode just works), and need no Python wiring —
+  just include the CSS/JS. Labels default to English, translatable via
+  `window.ADMIN_HOME_I18N` (same pattern as the home dashboard's
+  "Favorites" label). Added the `i-filter` icon to the bundled sprite.
+
 ## 0.2.4
 
 - Fixed the language flags in the user menu: `.admin-home-user-menu__flag`
