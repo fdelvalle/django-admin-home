@@ -1,0 +1,13 @@
+{% extends "admin/base_site.html" %}
+{% comment %}
+Stands in for a host project's own override: wires up the header user menu
+the same way the README instructs. django_admin_home ships no
+admin/base_site.html of its own — this integration is always up to the
+host.
+{% endcomment %}
+
+{% block usertools %}
+    {% if has_permission %}
+        <div id="user-tools">{% include "admin_home/_user_menu.html" %}</div>
+    {% endif %}
+{% endblock %}

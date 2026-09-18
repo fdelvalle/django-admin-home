@@ -1,4 +1,4 @@
-"""A tree-navigation sidebar + favorites/most-accessed home dashboard for the Django admin.
+"""A tree-navigation sidebar, home dashboard and header user menu for the Django admin.
 
 By default, the Django admin's home page is a flat, alphabetical list of
 every app/model the user can access, and the built-in sidebar has no
@@ -11,6 +11,9 @@ favorites or usage-based shortcuts. This package replaces both with:
   "masonry" layout).
 - An optional "Pages" group for custom, non-model links (dashboards, API
   docs, ...), configured entirely via settings.
+- A header user menu: identity, a language switcher (driven by
+  ``settings.LANGUAGES``), an explicit Auto/Light/Dark theme switcher, and
+  account shortcuts (change password, log out).
 - A dependency-free SVG icon set, offline (no external font/CDN).
 
 Installation
@@ -39,7 +42,27 @@ Installation
     {% load static %}
     <link rel="stylesheet" href="{% static 'django_admin_home/css/nav.css' %}">
     <link rel="stylesheet" href="{% static 'django_admin_home/css/home.css' %}">
+    <link rel="stylesheet" href="{% static 'django_admin_home/css/user_menu.css' %}">
     <script src="{% static 'django_admin_home/js/nav.js' %}" defer></script>
+    <script src="{% static 'django_admin_home/js/user_menu.js' %}" defer></script>
+
+5. For the header user menu, add the two context processors and include
+   the template in your ``admin/base_site.html``'s ``usertools`` block::
+
+    TEMPLATES = [{
+        ...,
+        "OPTIONS": {"context_processors": [
+            ...,
+            "django_admin_home.context_processors.admin_user",
+            "django_admin_home.context_processors.admin_languages",
+        ]},
+    }]
+
+    {% block usertools %}
+        {% if has_permission %}
+            <div id="user-tools">{% include "admin_home/_user_menu.html" %}</div>
+        {% endif %}
+    {% endblock %}
 
 Optional settings
 ------------------
@@ -49,11 +72,20 @@ Optional settings
   links shown in a "Pages" group. See :mod:`django_admin_home.pages`.
 - ``ADMIN_HOME_MAX_MOST_ACCESSED``: how many "most accessed" cards to show
   on the home page (default 8).
+- ``ADMIN_HOME_LANGUAGE_LABELS`` / ``ADMIN_HOME_LANGUAGE_FLAGS``: dicts
+  keyed by language code (e.g. ``"pt-br"``) overriding the native label
+  and the sprite icon shown per language in the user menu. A language
+  missing from these dicts still works, with Django's own label and a
+  generic globe icon. See :mod:`django_admin_home.context_processors`.
+
+To add project-specific links to the user menu (e.g. an internal tool),
+override the template ``admin_home/_user_menu_extra_actions.html`` — it's
+empty by default.
 """
 
 from __future__ import annotations
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "DEFAULT_APP_ICON",
@@ -61,6 +93,8 @@ __all__ = [
     "HOME_ICON",
     "MenuAccess",
     "MenuFavorite",
+    "admin_languages",
+    "admin_user",
     "app_menu_key",
     "build_custom_pages_group",
     "build_menu_tree",
@@ -82,6 +116,8 @@ _LAZY_ATTRS = {
     "MenuAccess": "django_admin_home.models",
     "MenuFavorite": "django_admin_home.models",
     "build_custom_pages_group": "django_admin_home.pages",
+    "admin_languages": "django_admin_home.context_processors",
+    "admin_user": "django_admin_home.context_processors",
     "DEFAULT_APP_ICON": "django_admin_home.menu",
     "DEFAULT_MODEL_ICON": "django_admin_home.menu",
     "HOME_ICON": "django_admin_home.menu",

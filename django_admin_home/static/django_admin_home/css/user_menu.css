@@ -1,0 +1,345 @@
+/* =====================================================================
+   django-admin-home — admin header user menu
+   Avatar trigger that opens a panel: identity, language switcher, theme
+   switcher (auto/light/dark) and account shortcuts. Supports dark mode.
+   ===================================================================== */
+
+#header {
+    position: relative;
+}
+
+#user-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    max-width: 100%;
+}
+
+.admin-home-user-menu {
+    position: relative;
+    font-size: 0.8125rem;
+    line-height: 1.2;
+}
+
+/* ------------------------------------------------------------- trigger */
+
+.admin-home-user-menu__trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px 4px 4px;
+    background: transparent;
+    border: 1px solid var(--admin-home-nav-border, #e7e9ee);
+    border-radius: 999px;
+    color: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.admin-home-user-menu__trigger:hover,
+.admin-home-user-menu__trigger[aria-expanded="true"] {
+    background: var(--admin-home-nav-hover, #f4f5f7);
+}
+
+.admin-home-user-menu__trigger:focus-visible {
+    outline: 2px solid var(--admin-home-accent, #4F46E5);
+    outline-offset: 2px;
+}
+
+.admin-home-user-menu__avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--admin-home-accent, #4F46E5);
+    color: var(--admin-home-accent-ink, #fff);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    flex: 0 0 auto;
+}
+
+.admin-home-user-menu__name {
+    max-width: 18ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-home-user-menu__chevron {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 auto;
+    transform: rotate(90deg);
+    transition: transform 0.2s ease;
+}
+
+.admin-home-user-menu__trigger[aria-expanded="true"] .admin-home-user-menu__chevron {
+    transform: rotate(-90deg);
+}
+
+/* --------------------------------------------------------------- panel */
+
+.admin-home-user-menu__panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 1300;
+    min-width: 260px;
+    max-width: calc(100vw - 24px);
+    background: var(--admin-home-nav-bg, #fff);
+    color: var(--admin-home-nav-text, #3a4452);
+    border: 1px solid var(--admin-home-nav-border, #e7e9ee);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+    text-align: left;
+}
+
+.admin-home-user-menu__panel[hidden] {
+    display: none;
+}
+
+.admin-home-user-menu__panel a,
+.admin-home-user-menu__panel button {
+    color: inherit;
+}
+
+/* ------------------------------------------------------------ identity */
+
+.admin-home-user-menu__identity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+}
+
+.admin-home-user-menu__identity-icon svg {
+    width: 18px;
+    height: 18px;
+    color: var(--admin-home-nav-icon, #8a94a6);
+}
+
+.admin-home-user-menu__identity-data {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.admin-home-user-menu__identity-name {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-home-user-menu__identity-email {
+    font-size: 0.75rem;
+    color: var(--admin-home-nav-title, #9aa3b2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* -------------------------------------------------------------- sections */
+
+.admin-home-user-menu__section {
+    padding: 10px 16px;
+    border-top: 1px solid var(--admin-home-nav-border, #e7e9ee);
+}
+
+.admin-home-user-menu__section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--admin-home-nav-title, #9aa3b2);
+}
+
+.admin-home-user-menu__section-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* -------------------------------------------------------------- languages */
+
+.admin-home-user-menu__langs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+}
+
+.admin-home-user-menu__lang {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+    background: transparent;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    line-height: 0;
+    color: var(--admin-home-nav-icon, #8a94a6);
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.admin-home-user-menu__lang:hover {
+    background: var(--admin-home-nav-hover, #f4f5f7);
+}
+
+.admin-home-user-menu__lang.is-active {
+    border-color: var(--admin-home-accent, #4F46E5);
+    background: var(--admin-home-nav-hover, #f4f5f7);
+    color: var(--admin-home-accent, #4F46E5);
+}
+
+.admin-home-user-menu__lang:focus-visible {
+    outline: 2px solid var(--admin-home-accent, #4F46E5);
+    outline-offset: 1px;
+}
+
+.admin-home-user-menu__flag {
+    width: 20px;
+    height: 20px;
+}
+
+/* ------------------------------------------------------------------ theme */
+
+.admin-home-user-menu__themes {
+    display: flex;
+    gap: 6px;
+}
+
+.admin-home-user-menu__theme {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 4px;
+    background: transparent;
+    border: 1px solid var(--admin-home-nav-border, #e7e9ee);
+    border-radius: 8px;
+    font-size: 0.6875rem;
+    cursor: pointer;
+    color: inherit;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.admin-home-user-menu__theme svg {
+    width: 16px;
+    height: 16px;
+}
+
+.admin-home-user-menu__theme:hover {
+    background: var(--admin-home-nav-hover, #f4f5f7);
+}
+
+.admin-home-user-menu__theme[aria-pressed="true"] {
+    border-color: var(--admin-home-accent, #4F46E5);
+    background: var(--admin-home-nav-hover, #f4f5f7);
+    color: var(--admin-home-accent, #4F46E5);
+    font-weight: 600;
+}
+
+.admin-home-user-menu__theme:focus-visible {
+    outline: 2px solid var(--admin-home-accent, #4F46E5);
+    outline-offset: 1px;
+}
+
+/* ----------------------------------------------------------------- footer */
+
+.admin-home-user-menu__footer {
+    border-top: 1px solid var(--admin-home-nav-border, #e7e9ee);
+    padding: 6px 0;
+}
+
+.admin-home-user-menu__footer form {
+    margin: 0;
+}
+
+.admin-home-user-menu__action {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 16px;
+    background: transparent;
+    border: 0;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    text-align: left;
+    text-decoration: none;
+    text-transform: none;
+    letter-spacing: normal;
+    cursor: pointer;
+    color: inherit;
+}
+
+.admin-home-user-menu__action svg {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    color: var(--admin-home-nav-icon, #8a94a6);
+}
+
+.admin-home-user-menu__action:hover {
+    background: var(--admin-home-nav-hover, #f4f5f7);
+}
+
+.admin-home-user-menu__action:focus-visible {
+    outline: 2px solid var(--admin-home-accent, #4F46E5);
+    outline-offset: -2px;
+}
+
+/* Hide the admin's own theme-cycling toggle: this menu offers an explicit
+   Auto/Light/Dark choice instead of the native blind-cycle button. */
+#header .theme-toggle,
+#user-tools .theme-toggle {
+    display: none !important;
+}
+
+/* ------------------------------------------------------------------ dark */
+
+[data-theme="dark"] .admin-home-user-menu__trigger { color: var(--admin-home-nav-text, #d5d9e0); }
+[data-theme="dark"] .admin-home-user-menu__panel { background: var(--admin-home-nav-bg, #20242c); color: var(--admin-home-nav-text, #d5d9e0); }
+
+@media (prefers-color-scheme: dark) {
+    html[data-theme="auto"] .admin-home-user-menu__trigger { color: var(--admin-home-nav-text, #d5d9e0); }
+    html[data-theme="auto"] .admin-home-user-menu__panel { background: var(--admin-home-nav-bg, #20242c); color: var(--admin-home-nav-text, #d5d9e0); }
+}
+
+/* ------------------------------------------------------------- responsive */
+
+@media (max-width: 767px) {
+    .admin-home-user-menu__name {
+        display: none;
+    }
+
+    .admin-home-user-menu__panel {
+        position: fixed;
+        top: auto;
+        right: 8px;
+        left: 8px;
+        min-width: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-home-user-menu__trigger,
+    .admin-home-user-menu__chevron,
+    .admin-home-user-menu__lang,
+    .admin-home-user-menu__theme,
+    .admin-home-user-menu__action {
+        transition: none;
+    }
+}

@@ -1,0 +1,117 @@
+{% load i18n %}
+{% comment %}
+User menu for the admin header: identity, language switcher, theme
+switcher (auto/light/dark) and account shortcuts (change password, log
+out).
+
+Context (from django_admin_home.context_processors):
+  - admin_home_user_initials — via admin_user
+  - admin_home_languages     — via admin_languages, [] if not wired up
+
+Language switching uses Django's native ``set_language`` view (one POST
+per language, with ``next`` set to the current page) — no custom view.
+
+Theme switching replicates the Django admin's own ``theme.js`` contract
+(``localStorage.theme`` + ``data-theme`` on ``<html>``) instead of calling
+into it, since that script keeps its ``setTheme`` in a closure — see
+``static/django_admin_home/js/user_menu.js``.
+
+To add extra account-menu links (e.g. a project-specific tool), override
+"admin_home/_user_menu_extra_actions.html" in your own templates dir.
+{% endcomment %}
+
+<div class="admin-home-user-menu" id="admin-home-user-menu" data-admin-home-user-menu>
+  <button type="button"
+          class="admin-home-user-menu__trigger"
+          id="admin-home-user-menu-trigger"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="admin-home-user-menu-panel">
+    <span class="admin-home-user-menu__avatar" aria-hidden="true">{{ admin_home_user_initials }}</span>
+    <span class="admin-home-user-menu__name">{% firstof user.get_full_name user.get_short_name user.get_username %}</span>
+    <svg class="admin-home-user-menu__chevron" aria-hidden="true" focusable="false"><use href="#i-chevron"></use></svg>
+  </button>
+
+  <div class="admin-home-user-menu__panel"
+       id="admin-home-user-menu-panel"
+       role="menu"
+       aria-labelledby="admin-home-user-menu-trigger"
+       hidden>
+
+    {% comment %} Identity {% endcomment %}
+    <div class="admin-home-user-menu__identity">
+      <span class="admin-home-user-menu__identity-icon" aria-hidden="true">
+        <svg focusable="false"><use href="#i-user"></use></svg>
+      </span>
+      <span class="admin-home-user-menu__identity-data">
+        <span class="admin-home-user-menu__identity-name">{% firstof user.get_full_name user.get_short_name user.get_username %}</span>
+        {% if user.email %}<span class="admin-home-user-menu__identity-email">{{ user.email }}</span>{% endif %}
+      </span>
+    </div>
+
+    {% comment %} Languages {% endcomment %}
+    {% if admin_home_languages %}
+      <div class="admin-home-user-menu__section">
+        <p class="admin-home-user-menu__section-title" id="admin-home-lang-label">
+          <svg class="admin-home-user-menu__section-icon" aria-hidden="true" focusable="false"><use href="#i-globe"></use></svg>
+          {% translate "Languages" %}
+        </p>
+        <form action="{% url 'set_language' %}" method="post" class="admin-home-user-menu__langs" aria-labelledby="admin-home-lang-label">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          {% for lang in admin_home_languages %}
+            <button type="submit"
+                    name="language"
+                    value="{{ lang.code }}"
+                    class="admin-home-user-menu__lang{% if lang.is_active %} is-active{% endif %}"
+                    title="{{ lang.label }}"
+                    {% if lang.is_active %}aria-current="true"{% endif %}>
+              <svg class="admin-home-user-menu__flag" aria-hidden="true" focusable="false"><use href="#i-{{ lang.icon }}"></use></svg>
+              <span class="visually-hidden">{{ lang.label }}</span>
+            </button>
+          {% endfor %}
+        </form>
+      </div>
+    {% endif %}
+
+    {% comment %} Theme {% endcomment %}
+    <div class="admin-home-user-menu__section">
+      <p class="admin-home-user-menu__section-title" id="admin-home-theme-label">
+        <svg class="admin-home-user-menu__section-icon" aria-hidden="true" focusable="false"><use href="#i-palette"></use></svg>
+        {% translate "Theme" %}
+      </p>
+      <div class="admin-home-user-menu__themes" role="group" aria-labelledby="admin-home-theme-label" data-admin-home-theme-group>
+        <button type="button" class="admin-home-user-menu__theme" data-theme-value="auto" aria-pressed="false">
+          <svg aria-hidden="true" focusable="false"><use href="#i-monitor"></use></svg>
+          <span>{% translate "Auto" %}</span>
+        </button>
+        <button type="button" class="admin-home-user-menu__theme" data-theme-value="light" aria-pressed="false">
+          <svg aria-hidden="true" focusable="false"><use href="#i-sun"></use></svg>
+          <span>{% translate "Light" %}</span>
+        </button>
+        <button type="button" class="admin-home-user-menu__theme" data-theme-value="dark" aria-pressed="false">
+          <svg aria-hidden="true" focusable="false"><use href="#i-moon"></use></svg>
+          <span>{% translate "Dark" %}</span>
+        </button>
+      </div>
+    </div>
+
+    {% comment %} Account shortcuts {% endcomment %}
+    <div class="admin-home-user-menu__footer">
+      {% include "admin_home/_user_menu_extra_actions.html" %}
+      {% if user.has_usable_password %}
+        <a href="{% url 'admin:password_change' %}" class="admin-home-user-menu__action" role="menuitem">
+          <svg aria-hidden="true" focusable="false"><use href="#i-lock"></use></svg>
+          {% translate "Change password" %}
+        </a>
+      {% endif %}
+      <form id="admin-home-logout-form" method="post" action="{% url 'admin:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="admin-home-user-menu__action admin-home-user-menu__action--logout" role="menuitem">
+          <svg aria-hidden="true" focusable="false"><use href="#i-exit"></use></svg>
+          {% translate "Log out" %}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 # django-admin-home
 
-A tree-navigation sidebar plus a favorites/most-accessed home dashboard for
-the Django admin.
+A tree-navigation sidebar, home dashboard and header user menu for the
+Django admin.
 
 By default, the Django admin's home page is a flat, alphabetical list of
 every app/model the current user can access, and the built-in sidebar has
@@ -18,6 +18,9 @@ no favorites or usage-based shortcuts. This package replaces both with:
   "masonry" layout).
 - An optional "Pages" group for custom, non-model links (dashboards, API
   docs, external tools, ...), entirely configured via settings.
+- A header user menu: identity, a language switcher (driven by
+  `settings.LANGUAGES`), an explicit Auto/Light/Dark theme switcher, and
+  account shortcuts (change password, log out).
 - A dependency-free, offline SVG icon set (no external font/CDN).
 - Defensive by design: any unexpected failure falls back to the native
   admin behaviour instead of breaking the page.
@@ -57,7 +60,9 @@ Include the bundled CSS/JS in your `admin/base_site.html`:
 {% load static %}
 <link rel="stylesheet" href="{% static 'django_admin_home/css/nav.css' %}">
 <link rel="stylesheet" href="{% static 'django_admin_home/css/home.css' %}">
+<link rel="stylesheet" href="{% static 'django_admin_home/css/user_menu.css' %}">
 <script src="{% static 'django_admin_home/js/nav.js' %}" defer></script>
+<script src="{% static 'django_admin_home/js/user_menu.js' %}" defer></script>
 ```
 
 Run migrations:
@@ -65,6 +70,42 @@ Run migrations:
 ```bash
 python manage.py migrate django_admin_home
 ```
+
+### Header user menu (optional)
+
+The user menu (identity, language switcher, theme switcher, account
+shortcuts) needs two context processors and a template include:
+
+```python
+TEMPLATES = [{
+    ...,
+    "OPTIONS": {"context_processors": [
+        "django.template.context_processors.request",
+        "django.contrib.auth.context_processors.auth",
+        ...,
+        "django_admin_home.context_processors.admin_user",
+        "django_admin_home.context_processors.admin_languages",
+    ]},
+}]
+```
+
+```django
+{% block usertools %}
+    {% if has_permission %}
+        <div id="user-tools">{% include "admin_home/_user_menu.html" %}</div>
+    {% endif %}
+{% endblock %}
+```
+
+The language switcher lists whatever is in `settings.LANGUAGES` and posts
+to Django's own `set_language` view — make sure
+`django.middleware.locale.LocaleMiddleware` and `django.contrib.admin`'s
+`i18n` URLs are enabled. The theme switcher reuses the Django admin's own
+`localStorage.theme` + `data-theme` contract, so it stays in sync with the
+native toggle (which this menu hides, in favour of the explicit picker).
+
+To add project-specific links to the menu (e.g. an internal tool), override
+the template `admin_home/_user_menu_extra_actions.html` (empty by default).
 
 ## Settings (all optional)
 
@@ -89,6 +130,15 @@ ADMIN_HOME_CUSTOM_PAGES = [
 
 # How many "most accessed" cards to show on the home page (default 8).
 ADMIN_HOME_MAX_MOST_ACCESSED = 8
+
+# Native label / sprite icon per language code, for the user menu's
+# language switcher. A language missing here still works, with Django's
+# own label and the bundled "globe" icon. The package ships no flag
+# icons — any name in ADMIN_HOME_LANGUAGE_FLAGS must exist in the sprite,
+# which means adding your own <symbol> via a template override of
+# admin_home/_icon_sprite.html (see "Overriding the brand/logo" below).
+ADMIN_HOME_LANGUAGE_LABELS = {"pt-br": "Português (BR)", "es": "Español"}
+ADMIN_HOME_LANGUAGE_FLAGS = {"pt-br": "flag-br", "es": "flag-es"}
 ```
 
 ## Overriding the brand/logo
@@ -107,3 +157,6 @@ order putting your project templates before installed apps).
   are the host project's responsibility.
 - It does not migrate data from a previous, project-specific
   favorites/access-tracking implementation.
+- It does not ship any country flag icons, or a Rosetta/translation-tool
+  link — both are left to the host project via settings/template
+  overrides (see above).

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-admin-home"
-version = "0.1.0"
-description = "A tree-navigation sidebar plus a favorites/most-accessed home dashboard for the Django admin"
+version = "0.2.0"
+description = "A tree-navigation sidebar, home dashboard and header user menu for the Django admin"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"

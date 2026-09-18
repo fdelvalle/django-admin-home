@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0
+
+- Added the admin header user menu: identity, a language switcher driven
+  by `settings.LANGUAGES` (`django_admin_home.context_processors.admin_languages`),
+  an explicit Auto/Light/Dark theme switcher reusing the admin's own
+  `localStorage.theme`/`data-theme` contract, and account shortcuts
+  (change password, log out). New optional settings
+  `ADMIN_HOME_LANGUAGE_LABELS` / `ADMIN_HOME_LANGUAGE_FLAGS`. Extension
+  point via `admin_home/_user_menu_extra_actions.html` template override.
+
 ## 0.1.0
 
 - Initial extraction from a private Django project's admin customizations

@@ -1,0 +1,11 @@
+{% comment %}
+Extension point: empty by default. Override "admin_home/_user_menu_extra_actions.html"
+in your own templates dir to inject project-specific links into the user
+menu footer, above "Change password" / "Log out". Each link should follow
+the same markup as the other footer actions, e.g.:
+
+    <a href="{% url 'my-tool' %}" class="admin-home-user-menu__action" role="menuitem">
+        <svg aria-hidden="true" focusable="false"><use href="#i-<icon>"></use></svg>
+        My Tool
+    </a>
+{% endcomment %}
