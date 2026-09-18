@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.1
+
+- Fixed a contrast bug in the user menu: `<a>` actions ("Change password",
+  and any host-provided extra action) could inherit an illegible color in
+  dark mode from the host's own `#header a:link`/`a:visited` styling
+  (Django's base admin CSS and many themes set this for the branded header
+  bar, not for a popover panel nested inside `#header`). The sibling
+  "Log out" `<button>` was unaffected because that selector only matches
+  `<a>`. Fixed by matching the same selector specificity in
+  `user_menu.css`.
+
 ## 0.2.0
 
 - Added the admin header user menu: identity, a language switcher driven

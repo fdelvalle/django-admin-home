@@ -285,6 +285,23 @@
     color: inherit;
 }
 
+/* Contrast fix: the Django admin's own base.css (and many host themes copy
+   the same pattern) sets `#header a:link, #header a:visited` with a color
+   tuned for the branded header bar, not for a popover panel nested inside
+   #header. That rule's specificity (element + pseudo-class) beats a plain
+   class selector, so <a> actions here (e.g. "Change password") would
+   inherit an illegible color in dark mode, while the sibling <button>
+   ("Log out") is untouched because the selector only matches <a>. Match the
+   same specificity and use !important to win over hosts that also use
+   !important for the same reason. */
+#header #user-tools .admin-home-user-menu__action,
+#header #user-tools a.admin-home-user-menu__action:link,
+#header #user-tools a.admin-home-user-menu__action:visited,
+#header #user-tools .admin-home-user-menu__action:hover,
+#header #user-tools .admin-home-user-menu__action:focus {
+    color: var(--admin-home-nav-text, #3a4452) !important;
+}
+
 .admin-home-user-menu__action svg {
     width: 16px;
     height: 16px;
