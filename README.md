@@ -1,5 +1,7 @@
 # django-admin-home
 
+[![Latest on Django Packages](https://img.shields.io/badge/PyPI-django--admin--home-8c3c26.svg)](https://djangopackages.org/packages/p/django-admin-home/)
+
 A tree-navigation sidebar, home dashboard and header user menu for the
 Django admin.
 
