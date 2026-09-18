@@ -13,6 +13,7 @@
     "use strict";
 
     var STORAGE_COLLAPSED = "admin-home:filter-collapsed";
+    var STORAGE_FACET_PREFIX = "admin-home:filter-open:";
 
     function i18n(key, fallback) {
         var strings = window.ADMIN_HOME_I18N || {};
@@ -74,6 +75,30 @@
                 localStorage.setItem(STORAGE_COLLAPSED, collapsed ? "1" : "0");
             });
         }
+
+        initFacets(body);
+    }
+
+    // Each filter facet (Django renders one <details data-filter-title="...">
+    // per facet, always open) starts closed, independently of the others —
+    // same "closed by default, remember what you opened" rule the sidebar's
+    // app groups use. Keyed by page path + facet title, since the same
+    // title (e.g. "By active") can mean something different on every
+    // changelist.
+    function facetKey(details, index) {
+        var title = details.getAttribute("data-filter-title") || String(index);
+        return STORAGE_FACET_PREFIX + window.location.pathname + "|" + title;
+    }
+
+    function initFacets(body) {
+        var facets = body.querySelectorAll("details");
+        facets.forEach(function (details, index) {
+            var key = facetKey(details, index);
+            details.open = localStorage.getItem(key) === "1";
+            details.addEventListener("toggle", function () {
+                localStorage.setItem(key, details.open ? "1" : "0");
+            });
+        });
     }
 
     if (document.readyState === "loading") {

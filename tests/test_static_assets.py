@@ -31,3 +31,8 @@ class StaticAssetsExistTests(SimpleTestCase):
         sprite = SPRITE_PATH.read_text()
         self.assertIn('id="i-filter"', sprite)
         self.assertIn('id="i-chevron"', sprite)
+
+    def test_filter_facets_default_closed_and_remember_state(self):
+        js = (STATIC_DIR / "js" / "filter_panel.js").read_text()
+        self.assertIn("data-filter-title", js)
+        self.assertIn('addEventListener("toggle"', js)

@@ -11,6 +11,9 @@
   just include the CSS/JS. Labels default to English, translatable via
   `window.ADMIN_HOME_I18N` (same pattern as the home dashboard's
   "Favorites" label). Added the `i-filter` icon to the bundled sprite.
+  Each filter facet (Django always renders its `<details>` open) now
+  starts closed and remembers what the user opened, same rule the
+  sidebar's app groups already use.
 
 ## 0.2.4
 
