@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.2
+
+- Fixed the user menu icons rendering as solid black shapes instead of thin
+  line icons: the shared `admin-home-icon` class (which sets
+  `fill: none; stroke: currentColor`) was missing from every bare `<svg>`
+  in `_user_menu.html` (identity, section titles, theme buttons, footer
+  actions) — without it, browsers fall back to the SVG default
+  `fill: black`, which is nearly invisible on light backgrounds and a
+  solid dark blob on dark ones. `nav_sidebar.html`/`index.html` always
+  included this class; the user menu template didn't.
+- `CUSTOM_PAGES_GROUP_NAME` ("Pages") is now wrapped in `gettext_lazy` —
+  it was a plain Python string, so it could never be translated by a host
+  project's own locale catalog no matter the active language.
+
 ## 0.2.1
 
 - Fixed a contrast bug in the user menu: `<a>` actions ("Change password",

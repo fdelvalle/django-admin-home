@@ -82,6 +82,27 @@ class UserMenuRenderTests(TestCase):
         self.assertIn('href="/admin/password_change/"', html)
         self.assertIn('action="/admin/logout/"', html)
 
+    def test_every_icon_in_the_menu_has_the_shared_icon_class(self):
+        """Regression test: without the shared ``admin-home-icon`` class (which
+        sets ``fill: none; stroke: currentColor``), a bare ``<svg><use ...>``
+        falls back to the SVG default ``fill: black`` — invisible on light
+        backgrounds, a solid dark blob on dark ones. Every icon inside the
+        menu (identity, section titles, theme buttons, footer actions) must
+        carry it, same as nav_sidebar.html/index.html already do."""
+        response = self.client.get("/admin/")
+        html = response.content.decode()
+        start = html.index('id="admin-home-user-menu"')
+        end = html.index("</div>", html.rindex('id="admin-home-user-menu-panel"'))
+        menu_html = html[start:end]
+        svg_count = menu_html.count("<svg")
+        icon_class_count = menu_html.count("admin-home-icon")
+        self.assertGreater(svg_count, 0)
+        self.assertEqual(
+            svg_count,
+            icon_class_count,
+            "every <svg> in the user menu must carry the shared admin-home-icon class",
+        )
+
     def test_extra_actions_extension_point_is_empty_by_default(self):
         response = self.client.get("/admin/")
         html = response.content.decode()

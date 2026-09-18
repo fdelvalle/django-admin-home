@@ -25,9 +25,10 @@ No setting configured (or an empty list) means the group never appears.
 from __future__ import annotations
 
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 
 CUSTOM_PAGES_GROUP_KEY = "app.pages"
-CUSTOM_PAGES_GROUP_NAME = "Pages"
+CUSTOM_PAGES_GROUP_NAME = _("Pages")
 CUSTOM_PAGES_GROUP_ICON = "grid"
 
 _DEFAULT_ICON = "list"
