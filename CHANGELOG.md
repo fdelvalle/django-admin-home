@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.4
+
+- Fixed the language flags in the user menu: `.admin-home-user-menu__flag`
+  (combined with the shared `admin-home-icon` class on the same `<svg>`)
+  now sets `stroke: none`. `admin-home-icon` sets `stroke: currentColor`
+  + `stroke-width: 2` for line icons, which flag symbols inherited even
+  though most of their shapes have no stroke of their own — on thin
+  shapes (e.g. the US flag's stripes) a 2-unit-wide stroke is thicker
+  than the shape itself and completely hides the fill color underneath.
+
 ## 0.2.3
 
 - The shared `admin-home-icon` class (sidebar, home dashboard, user menu)

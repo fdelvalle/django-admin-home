@@ -210,6 +210,14 @@
 .admin-home-user-menu__flag {
     width: 20px;
     height: 20px;
+    /* .admin-home-icon (combined with this class on the same <svg>) sets
+       stroke: currentColor + stroke-width: 2 for line icons. Flag symbols
+       are fill-only shapes with no stroke of their own on most of their
+       paths, so that stroke gets inherited and painted on top of them —
+       on thin shapes (e.g. a flag's stripes) a 2-unit-wide stroke is
+       thicker than the shape itself and completely hides the fill color
+       underneath it. Flags never want a stroke, regardless of theme. */
+    stroke: none;
 }
 
 /* ------------------------------------------------------------------ theme */
