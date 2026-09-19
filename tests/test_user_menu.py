@@ -71,6 +71,8 @@ class UserMenuRenderTests(TestCase):
         response = self.client.get("/admin/")
         self.assertEqual(response.status_code, 200)
         html = response.content.decode()
+        self.assertLess(html.index('localStorage.getItem("theme")'), html.index('id="admin-home-user-menu"'))
+        self.assertIn('root.dataset.theme = "auto"', html)
         self.assertIn("admin-home-user-menu", html)
         self.assertIn("admin-home-user-menu__langs", html)
         self.assertIn('data-theme-value="dark"', html)
@@ -79,6 +81,8 @@ class UserMenuRenderTests(TestCase):
     def test_change_password_and_logout_links_present(self):
         response = self.client.get("/admin/")
         html = response.content.decode()
+        self.assertIn('href="/"', html)
+        self.assertIn("View site", html)
         self.assertIn('href="/admin/password_change/"', html)
         self.assertIn('action="/admin/logout/"', html)
 

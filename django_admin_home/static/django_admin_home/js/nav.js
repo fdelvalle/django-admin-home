@@ -9,6 +9,7 @@
     "use strict";
 
     var STORAGE_COLLAPSED = "admin-home:nav-collapsed";
+    var MOBILE_BREAKPOINT = "(max-width: 767px)";
 
     function getCookie(name) {
         var value = "; " + document.cookie;
@@ -41,13 +42,27 @@
         var toggle = document.getElementById("admin-home-nav-toggle");
         if (!sidebar) return;
 
-        var startCollapsed = localStorage.getItem(STORAGE_COLLAPSED) === "1";
-        sidebar.classList.toggle("is-collapsed", startCollapsed);
+        var media = window.matchMedia(MOBILE_BREAKPOINT);
+
+        function applyViewportState() {
+            // The navigation is an off-canvas overlay on phones. Always start
+            // it closed there, regardless of the desktop preference saved in
+            // localStorage. Returning to a larger screen restores that choice.
+            var collapsed = media.matches || localStorage.getItem(STORAGE_COLLAPSED) === "1";
+            sidebar.classList.toggle("is-collapsed", collapsed);
+        }
+
+        applyViewportState();
+        media.addEventListener("change", applyViewportState);
 
         if (toggle) {
             toggle.addEventListener("click", function () {
                 var collapsed = sidebar.classList.toggle("is-collapsed");
-                localStorage.setItem(STORAGE_COLLAPSED, collapsed ? "1" : "0");
+                // Mobile is intentionally transient: it opens the drawer for
+                // this page only and never changes the desktop preference.
+                if (!media.matches) {
+                    localStorage.setItem(STORAGE_COLLAPSED, collapsed ? "1" : "0");
+                }
             });
         }
     }

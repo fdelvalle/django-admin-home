@@ -374,6 +374,24 @@ div.breadcrumbs a:hover { opacity: 1; text-decoration: underline; }
 
 /* Responsive */
 @media (max-width: 767px) {
-    .admin-home-sidebar { position: fixed; z-index: 100; height: 100vh; }
-    .main > .admin-home-sidebar + .content { max-width: 100%; }
+    .main > .admin-home-sidebar {
+        /* Keep the rail in the flex layout. A fixed sidebar is removed from
+           that layout, which makes both the breadcrumb and content drift
+           underneath it on narrow screens. */
+        position: sticky;
+        top: 0;
+        flex: 0 0 var(--admin-home-nav-width-collapsed);
+        height: 100vh;
+    }
+
+    /* The sidebar stays in flow, so content naturally starts after the rail. */
+    .main > .admin-home-sidebar + .content,
+    .main > .admin-home-sidebar.is-collapsed + .content {
+        max-width: calc(100% - var(--admin-home-nav-width-collapsed));
+        min-width: 0;
+    }
+
+    div.breadcrumbs {
+        padding-left: calc(16px + var(--admin-home-nav-width-collapsed));
+    }
 }

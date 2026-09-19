@@ -36,3 +36,24 @@ class StaticAssetsExistTests(SimpleTestCase):
         js = (STATIC_DIR / "js" / "filter_panel.js").read_text()
         self.assertIn("data-filter-title", js)
         self.assertIn('addEventListener("toggle"', js)
+
+    def test_mobile_sidebar_starts_collapsed_and_reserves_content_space(self):
+        css = (STATIC_DIR / "css" / "nav.css").read_text()
+        js = (STATIC_DIR / "js" / "nav.js").read_text()
+        self.assertIn("MOBILE_BREAKPOINT", js)
+        self.assertIn("media.matches ||", js)
+        self.assertIn("flex: 0 0 var(--admin-home-nav-width-collapsed)", css)
+        self.assertIn("padding-left: calc(16px + var(--admin-home-nav-width-collapsed))", css)
+
+    def test_mobile_user_menu_is_kept_right_aligned_and_avatar_only(self):
+        css = (STATIC_DIR / "css" / "user_menu.css").read_text()
+        self.assertIn("flex-wrap: nowrap", css)
+        self.assertIn("margin-left: auto", css)
+        self.assertIn(".admin-home-user-menu__chevron", css)
+        self.assertIn("flex-direction: row", css)
+
+    def test_user_menu_panel_is_not_clipped_by_the_django_header(self):
+        css = (STATIC_DIR / "css" / "user_menu.css").read_text()
+        self.assertIn("overflow: visible", css)
+        self.assertIn("z-index: 101", css)
+        self.assertIn("#user-tools .admin-home-user-menu", css)

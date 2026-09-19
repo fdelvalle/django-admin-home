@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0
+
+- Declared support for Django 3.2 through 6.0 and Python 3.10 or newer.
+  Added a tox matrix for each supported Django/Python combination. Python
+  3.15 remains unbounded at package level and will enter the matrix when a
+  Django release officially supports it.
+
 ## 0.3.0
 
 - Added two optional, settings-free extras: a collapsible changelist

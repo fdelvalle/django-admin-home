@@ -20,6 +20,22 @@ To add extra account-menu links (e.g. a project-specific tool), override
 "admin_home/_user_menu_extra_actions.html" in your own templates dir.
 {% endcomment %}
 
+{% comment %}
+Django 4.2 applies its saved theme only at window.load, which flashes the
+light palette first. This synchronous bootstrap runs while the document is
+still being parsed, before this header can be painted.
+{% endcomment %}
+<script>
+  (function (root) {
+    try {
+      var theme = localStorage.getItem("theme");
+      root.dataset.theme = theme === "light" || theme === "dark" || theme === "auto" ? theme : "auto";
+    } catch (error) {
+      root.dataset.theme = "auto";
+    }
+  }(document.documentElement));
+</script>
+
 <div class="admin-home-user-menu" id="admin-home-user-menu" data-admin-home-user-menu>
   <button type="button"
           class="admin-home-user-menu__trigger"
@@ -99,6 +115,12 @@ To add extra account-menu links (e.g. a project-specific tool), override
     {% comment %} Account shortcuts {% endcomment %}
     <div class="admin-home-user-menu__footer">
       {% include "admin_home/_user_menu_extra_actions.html" %}
+      {% if site_url %}
+        <a href="{{ site_url }}" class="admin-home-user-menu__action" role="menuitem">
+          <svg class="admin-home-icon" aria-hidden="true" focusable="false"><use href="#i-globe"></use></svg>
+          {% translate "View site" %}
+        </a>
+      {% endif %}
       {% if user.has_usable_password %}
         <a href="{% url 'admin:password_change' %}" class="admin-home-user-menu__action" role="menuitem">
           <svg class="admin-home-icon" aria-hidden="true" focusable="false"><use href="#i-lock"></use></svg>

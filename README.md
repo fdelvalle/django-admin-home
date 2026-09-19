@@ -5,6 +5,22 @@
 A tree-navigation sidebar, home dashboard and header user menu for the
 Django admin.
 
+## Compatibility
+
+The package supports Django 3.2 through 6.0 and uses Python 3.10 or newer.
+The tested combinations follow Django's own Python support policy:
+
+| Django | Python tested by this package |
+| --- | --- |
+| 3.2 | 3.10 |
+| 4.2 | 3.10 |
+| 5.2 | 3.10, 3.12 |
+| 6.0 | 3.12, 3.13, 3.14 |
+
+Python 3.15 has no upper bound in this package and requires no incompatible
+Python syntax or APIs. It can be used as soon as the selected Django release
+officially supports it; it is not part of the automated matrix until then.
+
 By default, the Django admin's home page is a flat, alphabetical list of
 every app/model the current user can access, and the built-in sidebar has
 no favorites or usage-based shortcuts. This package replaces both with:
