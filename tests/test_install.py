@@ -92,6 +92,10 @@ class SidebarRenderTests(TestCase):
         html = response.content.decode()
         self.assertLess(html.index('"admin-home-nav-precollapsed"'), html.index('id="admin-home-sidebar"'))
         self.assertGreater(html.index('sidebar.classList.add("is-collapsed")'), html.index('id="admin-home-sidebar"'))
+        # Nothing between the sidebar and the content: nav.css sizes the
+        # content with `.admin-home-sidebar + .content`.
+        after_nav = html[html.index("</nav>", html.index('id="admin-home-sidebar"')) + len("</nav>"):]
+        self.assertTrue(after_nav.lstrip().startswith("<main"), after_nav.lstrip()[:80])
 
     def test_star_toggle_reflected_after_favoriting(self):
         self.client.post("/admin/menu/toggle-favorite/", {"menu_key": "app.testapp"})

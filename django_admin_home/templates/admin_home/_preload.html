@@ -11,11 +11,17 @@ Two halves around the sidebar markup in admin/nav_sidebar.html:
     `admin-home-preload` (CSS transitions off), `admin-home-nav-precollapsed`
     and `admin-home-filter-precollapsed`, so the sidebar and the filter panel
     are laid out at their saved width from the very first paint;
-  - this one, right AFTER the </nav> (and before the changelist and its
-    #changelist-filter are parsed), mirrors what nav.js will do: sidebar
+  - this one, as the LAST CHILD of the <nav> (after its items, before the
+    changelist and its #changelist-filter are parsed), mirrors what nav.js
+    will do: sidebar
     collapsed state, open app groups and active item. Two frames after
     DOMContentLoaded it clears the <html> marks.
 It re-applies the <html> marks itself, so it still works on its own.
+
+It must not be placed between the </nav> and the content: nav.css sizes the
+content with `.admin-home-sidebar + .content` (adjacent sibling), and any
+element in between drops that max-width — the content then overflows the
+viewport and pushes the filter panel off screen.
 
 Idempotent: a host project may ship its own copy of this snippet (e.g. to
 support older package versions) and both can run on the same page.

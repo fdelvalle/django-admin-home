@@ -86,5 +86,7 @@ Data comes from django_admin_home.install via each_context:
         </div>
         {% endfor %}
     </div>
+    {# Last child of the <nav>, never after it: nav.css sizes the content with #}
+    {# `.admin-home-sidebar + .content`, which breaks with any element in between. #}
+    {% include "admin_home/_preload.html" %}
 </nav>
-{% include "admin_home/_preload.html" %}

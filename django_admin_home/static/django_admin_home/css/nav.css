@@ -397,8 +397,8 @@ div.breadcrumbs a:hover { opacity: 1; text-decoration: underline; }
 }
 
 /* =====================================================================
-   Page load: admin_home/_preload_head.html / _preload.html (included
-   around the sidebar) put `admin-home-preload` on <html> while the deferred scripts restore
+   Page load: admin_home/_preload_head.html (before the <nav>) and
+   _preload.html (last child of the <nav>) put `admin-home-preload` on <html> while the deferred scripts restore
    the saved state, so nothing animates from its server-rendered state to
    the saved one (the "blink" on every page load).
    ===================================================================== */
@@ -411,7 +411,7 @@ html.admin-home-preload *::after {
 /* admin_home/_preload_head.html runs before the <nav> exists: an empty
    sidebar would still take its full width for a frame, so size it from the
    <html> mark and keep its (still unstyled) items hidden until
-   admin_home/_preload.html adds .is-collapsed right after the markup. */
+   admin_home/_preload.html (last child of the <nav>) adds .is-collapsed. */
 html.admin-home-nav-precollapsed .main > .admin-home-sidebar {
     flex: 0 0 var(--admin-home-nav-width-collapsed);
     width: var(--admin-home-nav-width-collapsed);

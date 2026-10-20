@@ -73,7 +73,10 @@ class PageLoadFlashTests(SimpleTestCase):
     def test_preload_snippets_wrap_the_sidebar(self):
         sidebar = (PACKAGE_DIR / "templates" / "admin" / "nav_sidebar.html").read_text()
         self.assertLess(sidebar.index('{% include "admin_home/_preload_head.html" %}'), sidebar.index("<nav"))
-        self.assertGreater(sidebar.index('{% include "admin_home/_preload.html" %}'), sidebar.index("</nav>"))
+        tail = sidebar.index('{% include "admin_home/_preload.html" %}')
+        self.assertGreater(tail, sidebar.index('<div class="admin-home-nav-body">'))
+        # Inside the <nav>: nav.css relies on `.admin-home-sidebar + .content`.
+        self.assertLess(tail, sidebar.index("</nav>"))
 
     def test_preload_snippet_mirrors_the_storage_keys_of_the_deferred_scripts(self):
         snippet = (PACKAGE_DIR / "templates" / "admin_home" / "_preload.html").read_text()
