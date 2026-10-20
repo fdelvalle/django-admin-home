@@ -43,6 +43,14 @@ class StaticAssetsExistTests(SimpleTestCase):
         css = (STATIC_DIR / "css" / "filter_panel.css").read_text()
         self.assertIn("#content:has(#changelist.filtered) { padding-right: 0; }", css)
 
+    def test_collapsed_filter_is_a_floating_button_on_phones(self):
+        css = (STATIC_DIR / "css" / "filter_panel.css").read_text()
+        mobile = css[css.index("@media (max-width: 767px)"):]
+        self.assertIn("#changelist #changelist-filter.is-collapsed,", mobile)
+        self.assertIn("bottom: 16px;", mobile)
+        self.assertIn("border-radius: 999px;", mobile)
+        self.assertIn(".admin-home-filter-toggle::before", mobile)
+
     def test_filter_facets_default_closed_and_remember_state(self):
         js = (STATIC_DIR / "js" / "filter_panel.js").read_text()
         self.assertIn("data-filter-title", js)

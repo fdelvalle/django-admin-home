@@ -13,6 +13,10 @@
 - The changelist filter panel now sits flush against the right edge of the
   page (Django's `#content` right padding is dropped when the changelist has
   filters, on screens wider than a phone).
+- On phones the collapsed filter panel is a floating button in the
+  bottom-right corner (the whole pill toggles it) and the open panel is a
+  drawer over the page. The 64px full-height strip covered the right edge of
+  the content and its funnel was hidden behind the header.
 - `hscroll.js` no longer forces a layout of the results table on every
   scroll event: reads and writes are batched into one animation frame, and
   styles are only written when they change. The bar/table scroll sync no
