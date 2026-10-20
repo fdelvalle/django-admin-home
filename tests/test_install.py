@@ -87,6 +87,12 @@ class SidebarRenderTests(TestCase):
         self.assertIn("data-toggle-favorite-url", html)
         self.assertIn("data-track-access-url", html)
 
+    def test_sidebar_renders_the_preload_snippet(self):
+        response = self.client.get("/admin/testapp/book/")
+        html = response.content.decode()
+        self.assertIn("admin-home-preload", html)
+        self.assertGreater(html.index("admin-home-preload"), html.index('id="admin-home-sidebar"'))
+
     def test_star_toggle_reflected_after_favoriting(self):
         self.client.post("/admin/menu/toggle-favorite/", {"menu_key": "app.testapp"})
         response = self.client.get("/admin/testapp/book/")

@@ -31,58 +31,66 @@
         document.body.appendChild(bar);
         document.body.classList.add("admin-home-has-hscroll");
 
-        var syncing = false;
+        var frame = 0;
+        var last = {};
 
-        function positionBar() {
-            var rect = results.getBoundingClientRect();
-            bar.style.left = rect.left + "px";
-            bar.style.width = rect.width + "px";
+        function setStyle(el, prop, value) {
+            var key = el === bar ? "bar." + prop : "track." + prop;
+            if (last[key] === value) return;
+            last[key] = value;
+            el.style[prop] = value;
         }
 
+        // Reads everything first, then writes: interleaving them (as the
+        // first version did, on every scroll event) forced a synchronous
+        // layout of the whole results table each time.
         function refresh() {
-            positionBar();
-            track.style.width = table.scrollWidth + "px";
-
-            var hasOverflow = table.scrollWidth > results.clientWidth + 1;
-            if (!hasOverflow) {
-                bar.hidden = true;
-                return;
-            }
-
+            frame = 0;
+            var rect = results.getBoundingClientRect();
+            var scrollWidth = table.scrollWidth;
+            var hasOverflow = scrollWidth > results.clientWidth + 1;
             // If the table's own end (where the native scrollbar lives) is
             // already visible in the viewport, skip the floating bar.
-            var rect = results.getBoundingClientRect();
             var nativeVisible = rect.bottom <= window.innerHeight + 1;
-            bar.hidden = nativeVisible;
+            var scrollLeft = results.scrollLeft;
 
-            if (!bar.hidden) bar.scrollLeft = results.scrollLeft;
+            setStyle(bar, "left", rect.left + "px");
+            setStyle(bar, "width", rect.width + "px");
+            setStyle(track, "width", scrollWidth + "px");
+
+            var hidden = !hasOverflow || nativeVisible;
+            if (bar.hidden !== hidden) bar.hidden = hidden;
+            if (!hidden && bar.scrollLeft !== scrollLeft) bar.scrollLeft = scrollLeft;
         }
 
+        // Scroll/resize/ResizeObserver can fire many times per frame (and on
+        // every frame of a sidebar/filter animation): coalesce into one.
+        function schedule() {
+            if (!frame) frame = window.requestAnimationFrame(refresh);
+        }
+
+        // Copy only when the values differ: assigning an unchanged
+        // scrollLeft fires no event, so this can't ping-pong (a boolean
+        // "syncing" flag could get stuck and swallow the next scroll).
         bar.addEventListener("scroll", function () {
-            if (syncing) { syncing = false; return; }
-            syncing = true;
-            results.scrollLeft = bar.scrollLeft;
+            if (results.scrollLeft !== bar.scrollLeft) results.scrollLeft = bar.scrollLeft;
         });
         results.addEventListener("scroll", function () {
-            if (!bar.hidden) {
-                if (syncing) { syncing = false; return; }
-                syncing = true;
-                bar.scrollLeft = results.scrollLeft;
-            }
+            if (!bar.hidden && bar.scrollLeft !== results.scrollLeft) bar.scrollLeft = results.scrollLeft;
         });
 
-        window.addEventListener("resize", refresh);
-        window.addEventListener("scroll", refresh, { passive: true });
+        window.addEventListener("resize", schedule);
+        window.addEventListener("scroll", schedule, { passive: true });
 
         if (window.ResizeObserver) {
-            var ro = new ResizeObserver(refresh);
+            var ro = new ResizeObserver(schedule);
             ro.observe(table);
             ro.observe(results);
         }
 
         // Recompute once layout settles (fonts/images/reflow).
         refresh();
-        window.setTimeout(refresh, 250);
+        window.setTimeout(schedule, 250);
     }
 
     if (document.readyState === "loading") {

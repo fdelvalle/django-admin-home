@@ -191,15 +191,21 @@
         a.setAttribute("data-menu-key", meta.key);
         if (meta.newTab) { a.target = "_blank"; a.rel = "noopener"; }
 
+        // Static markup only; key/icon/name go in through the DOM API, never
+        // concatenated into HTML. Clicks on the star are already stopped by
+        // the delegated handler in initStars, so no inline onclick (which a
+        // strict CSP would block anyway).
         a.innerHTML =
             '<span class="admin-home-card-icon"><svg class="admin-home-icon" aria-hidden="true">' +
-            '<use href="#i-' + meta.icon + '"></use></svg></span>' +
+            '<use></use></svg></span>' +
             '<span class="admin-home-card-body"><span class="admin-home-card-name"></span></span>' +
-            '<button class="admin-home-star is-favorite" type="button" data-menu-key="' + meta.key + '" ' +
-            'aria-pressed="true" onclick="event.preventDefault();event.stopPropagation();">' +
+            '<button class="admin-home-star is-favorite" type="button" aria-pressed="true">' +
             '<svg class="admin-home-icon admin-home-star-on" aria-hidden="true"><use href="#i-star-filled"></use></svg>' +
             '<svg class="admin-home-icon admin-home-star-off" aria-hidden="true"><use href="#i-star"></use></svg>' +
             '</button>';
+        var icon = /^[\w-]+$/.test(meta.icon) ? meta.icon : "grid";
+        a.querySelector(".admin-home-card-icon use").setAttribute("href", "#i-" + icon);
+        a.querySelector(".admin-home-star").setAttribute("data-menu-key", meta.key);
         a.querySelector(".admin-home-card-name").textContent = meta.name;
         return a;
     }

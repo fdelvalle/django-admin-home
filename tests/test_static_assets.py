@@ -64,3 +64,48 @@ class StaticAssetsExistTests(SimpleTestCase):
         self.assertIn("overflow: visible", css)
         self.assertIn("z-index: 101", css)
         self.assertIn("#user-tools .admin-home-user-menu", css)
+
+
+class PageLoadFlashTests(SimpleTestCase):
+    """The sidebar/filter state must be in place before the first paint;
+    otherwise every page load shows them open and animates them closed."""
+
+    def test_preload_snippet_is_included_after_the_sidebar(self):
+        sidebar = (PACKAGE_DIR / "templates" / "admin" / "nav_sidebar.html").read_text()
+        self.assertGreater(sidebar.index('{% include "admin_home/_preload.html" %}'), sidebar.index("</nav>"))
+
+    def test_preload_snippet_mirrors_the_storage_keys_of_the_deferred_scripts(self):
+        snippet = (PACKAGE_DIR / "templates" / "admin_home" / "_preload.html").read_text()
+        nav = (STATIC_DIR / "js" / "nav.js").read_text()
+        filters = (STATIC_DIR / "js" / "filter_panel.js").read_text()
+        for key in ("admin-home:nav-collapsed", "admin-home:nav-group:"):
+            self.assertIn(key, nav)
+            self.assertIn(key, snippet)
+        self.assertIn("admin-home:filter-collapsed", filters)
+        self.assertIn("admin-home:filter-collapsed", snippet)
+        self.assertIn("(max-width: 767px)", nav)
+        self.assertIn("(max-width: 767px)", snippet)
+
+    def test_transitions_are_off_while_preloading(self):
+        nav_css = (STATIC_DIR / "css" / "nav.css").read_text()
+        filter_css = (STATIC_DIR / "css" / "filter_panel.css").read_text()
+        self.assertIn("html.admin-home-preload *", nav_css)
+        self.assertIn("html.admin-home-filter-precollapsed #changelist #changelist-filter", filter_css)
+
+    def test_hscroll_coalesces_layout_work_into_one_frame(self):
+        js = (STATIC_DIR / "js" / "hscroll.js").read_text()
+        self.assertIn("requestAnimationFrame(refresh)", js)
+        self.assertIn('addEventListener("scroll", schedule', js)
+        self.assertNotIn('addEventListener("scroll", refresh', js)
+
+
+class NoDataConcatenatedIntoHtmlTests(SimpleTestCase):
+    def test_favorite_card_sets_key_and_icon_through_the_dom(self):
+        js = (STATIC_DIR / "js" / "nav.js").read_text()
+        self.assertNotIn("data-menu-key=\"' + meta.key", js)
+        self.assertNotIn("onclick=", js)
+
+    def test_filter_header_labels_use_text_content(self):
+        js = (STATIC_DIR / "js" / "filter_panel.js").read_text()
+        self.assertNotIn("+ filtersLabel +", js)
+        self.assertNotIn("+ toggleLabel +", js)

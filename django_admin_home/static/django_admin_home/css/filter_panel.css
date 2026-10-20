@@ -249,6 +249,15 @@
 }
 #changelist-filter.is-collapsed .admin-home-filter-title { justify-content: center; }
 
+/* Before filter_panel.js runs: admin_home/_preload.html adds this class
+   on <html> when the panel will start collapsed, so it is laid out at its
+   collapsed width from the first paint instead of shrinking afterwards. */
+html.admin-home-filter-precollapsed #changelist #changelist-filter {
+    flex: 0 0 var(--admin-home-filter-width-collapsed);
+    width: var(--admin-home-filter-width-collapsed);
+}
+html.admin-home-filter-precollapsed #changelist-filter > :not(.admin-home-filter-header) { display: none; }
+
 /* ------------------------------------------------------------- responsive */
 
 @media (max-width: 767px) {

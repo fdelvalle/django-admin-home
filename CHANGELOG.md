@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.4.2
+
+- Fixed the sidebar and the changelist filter panel "blinking" on every
+  page load. They were painted open and only collapsed by the deferred
+  scripts, with a width transition that re-laid out the results table on
+  every frame. `admin/nav_sidebar.html` now includes
+  `admin_home/_preload.html`, a small inline script that restores the saved
+  state before the first paint and keeps transitions off until the page has
+  loaded. No change is needed in the host project; under a CSP without
+  `'unsafe-inline'` the snippet is blocked and the previous behaviour stays.
+- `hscroll.js` no longer forces a layout of the results table on every
+  scroll event: reads and writes are batched into one animation frame, and
+  styles are only written when they change. The bar/table scroll sync no
+  longer relies on a flag that could swallow a scroll.
+- `nav.js` and `filter_panel.js` put the favorite key, icon and i18n labels
+  in through the DOM API instead of concatenating them into HTML, and the
+  favorite card no longer uses an inline `onclick`.
+
 ## 0.4.1
 
 - Added the `ADMIN_HOME_SHOW_WELCOME_BANNER` setting (default `True`) to
