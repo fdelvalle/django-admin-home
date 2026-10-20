@@ -10,6 +10,9 @@
   `admin_home/_preload.html` as its last child, two small inline scripts that restore the saved state before the first paint and
   keep transitions off until the page has loaded. No change is needed in the host project; under a CSP without
   `'unsafe-inline'` the snippet is blocked and the previous behaviour stays.
+- The changelist filter panel now sits flush against the right edge of the
+  page (Django's `#content` right padding is dropped when the changelist has
+  filters, on screens wider than a phone).
 - `hscroll.js` no longer forces a layout of the results table on every
   scroll event: reads and writes are batched into one animation frame, and
   styles are only written when they change. The bar/table scroll sync no

@@ -258,6 +258,15 @@ html.admin-home-filter-precollapsed #changelist #changelist-filter {
 }
 html.admin-home-filter-precollapsed #changelist-filter > :not(.admin-home-filter-header) { display: none; }
 
+/* The filter panel is the right edge of the page: drop Django's #content
+   right padding (40px, less on smaller screens) so it sits flush against the
+   viewport instead of floating with an empty strip beside it. Only with a
+   filter panel (otherwise the table would touch the edge) and not on phones,
+   where the panel is a fixed overlay. */
+@media (min-width: 768px) {
+    #content:has(#changelist.filtered) { padding-right: 0; }
+}
+
 /* ------------------------------------------------------------- responsive */
 
 @media (max-width: 767px) {

@@ -39,6 +39,10 @@ class StaticAssetsExistTests(SimpleTestCase):
         self.assertIn("#changelist #changelist-filter details > summary::before", css)
         self.assertIn("#changelist #changelist-filter details[open] > summary::before", css)
 
+    def test_filter_panel_sits_flush_against_the_right_edge(self):
+        css = (STATIC_DIR / "css" / "filter_panel.css").read_text()
+        self.assertIn("#content:has(#changelist.filtered) { padding-right: 0; }", css)
+
     def test_filter_facets_default_closed_and_remember_state(self):
         js = (STATIC_DIR / "js" / "filter_panel.js").read_text()
         self.assertIn("data-filter-title", js)
