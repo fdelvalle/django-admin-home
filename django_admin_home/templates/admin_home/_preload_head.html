@@ -1,0 +1,28 @@
+{% comment %}
+First half of the page-load state restore (see admin_home/_preload.html).
+
+Runs right BEFORE the sidebar markup. The browser may paint between any two
+parsed elements, and an empty <nav> already takes its full expanded width, so
+the collapsed width must be known before the <nav> exists: this only marks
+<html>, and nav.css / filter_panel.css size the sidebar and the filter panel
+from those classes until the scripts take over.
+{% endcomment %}
+<script>
+(function () {
+    "use strict";
+    var root = document.documentElement;
+
+    function stored(key) {
+        try { return window.localStorage.getItem(key); } catch (e) { return null; }
+    }
+
+    root.classList.add("admin-home-preload");
+    if (stored("admin-home:filter-collapsed") !== "0") {
+        root.classList.add("admin-home-filter-precollapsed");
+    }
+    var mobile = window.matchMedia && window.matchMedia("(max-width: 767px)").matches;
+    if (mobile || stored("admin-home:nav-collapsed") === "1") {
+        root.classList.add("admin-home-nav-precollapsed");
+    }
+})();
+</script>

@@ -6,14 +6,16 @@ has been parsed, so without this the sidebar and the filter panel were
 painted open and then animated closed on every page load (a visible "blink",
 plus a full re-layout of the results table on every animation frame).
 
-This runs synchronously right after the sidebar markup — before the
-changelist (and its #changelist-filter) is parsed — and mirrors what the
-deferred scripts will do, so they find everything already in place:
-  - sidebar collapsed state, open app groups and active item (nav.js);
-  - `admin-home-filter-precollapsed` on <html> unless the user expanded the
-    filter panel before (filter_panel.js);
-  - `admin-home-preload` on <html>, which disables CSS transitions until two
-    frames after DOMContentLoaded.
+Two halves around the sidebar markup in admin/nav_sidebar.html:
+  - admin_home/_preload_head.html, BEFORE the <nav>, marks <html> with
+    `admin-home-preload` (CSS transitions off), `admin-home-nav-precollapsed`
+    and `admin-home-filter-precollapsed`, so the sidebar and the filter panel
+    are laid out at their saved width from the very first paint;
+  - this one, right AFTER the </nav> (and before the changelist and its
+    #changelist-filter are parsed), mirrors what nav.js will do: sidebar
+    collapsed state, open app groups and active item. Two frames after
+    DOMContentLoaded it clears the <html> marks.
+It re-applies the <html> marks itself, so it still works on its own.
 
 Idempotent: a host project may ship its own copy of this snippet (e.g. to
 support older package versions) and both can run on the same page.
@@ -70,7 +72,11 @@ support older package versions) and both can run on the same page.
         // transitions come back on.
         window.requestAnimationFrame(function () {
             window.requestAnimationFrame(function () {
-                root.classList.remove("admin-home-preload", "admin-home-filter-precollapsed");
+                root.classList.remove(
+                    "admin-home-preload",
+                    "admin-home-nav-precollapsed",
+                    "admin-home-filter-precollapsed"
+                );
             });
         });
     });

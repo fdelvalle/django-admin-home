@@ -90,8 +90,8 @@ class SidebarRenderTests(TestCase):
     def test_sidebar_renders_the_preload_snippet(self):
         response = self.client.get("/admin/testapp/book/")
         html = response.content.decode()
-        self.assertIn("admin-home-preload", html)
-        self.assertGreater(html.index("admin-home-preload"), html.index('id="admin-home-sidebar"'))
+        self.assertLess(html.index('"admin-home-nav-precollapsed"'), html.index('id="admin-home-sidebar"'))
+        self.assertGreater(html.index('sidebar.classList.add("is-collapsed")'), html.index('id="admin-home-sidebar"'))
 
     def test_star_toggle_reflected_after_favoriting(self):
         self.client.post("/admin/menu/toggle-favorite/", {"menu_key": "app.testapp"})

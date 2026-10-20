@@ -5,10 +5,10 @@
 - Fixed the sidebar and the changelist filter panel "blinking" on every
   page load. They were painted open and only collapsed by the deferred
   scripts, with a width transition that re-laid out the results table on
-  every frame. `admin/nav_sidebar.html` now includes
-  `admin_home/_preload.html`, a small inline script that restores the saved
-  state before the first paint and keeps transitions off until the page has
-  loaded. No change is needed in the host project; under a CSP without
+  every frame. `admin/nav_sidebar.html` now wraps the sidebar with
+  `admin_home/_preload_head.html` and `admin_home/_preload.html`, two small
+  inline scripts that restore the saved state before the first paint and
+  keep transitions off until the page has loaded. No change is needed in the host project; under a CSP without
   `'unsafe-inline'` the snippet is blocked and the previous behaviour stays.
 - `hscroll.js` no longer forces a layout of the results table on every
   scroll event: reads and writes are batched into one animation frame, and
