@@ -14,6 +14,7 @@ Data comes from django_admin_home.install via each_context:
 {% endcomment %}
 
 {% include "admin_home/_icon_sprite.html" %}
+{% include "admin_home/_preload_head.html" %}
 
 <nav class="admin-home-sidebar" id="admin-home-sidebar"
      data-toggle-favorite-url="{% url 'admin:admin_home_toggle_favorite' %}"
@@ -85,4 +86,7 @@ Data comes from django_admin_home.install via each_context:
         </div>
         {% endfor %}
     </div>
+    {# Last child of the <nav>, never after it: nav.css sizes the content with #}
+    {# `.admin-home-sidebar + .content`, which breaks with any element in between. #}
+    {% include "admin_home/_preload.html" %}
 </nav>

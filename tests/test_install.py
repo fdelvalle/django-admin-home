@@ -87,6 +87,16 @@ class SidebarRenderTests(TestCase):
         self.assertIn("data-toggle-favorite-url", html)
         self.assertIn("data-track-access-url", html)
 
+    def test_sidebar_renders_the_preload_snippet(self):
+        response = self.client.get("/admin/testapp/book/")
+        html = response.content.decode()
+        self.assertLess(html.index('"admin-home-nav-precollapsed"'), html.index('id="admin-home-sidebar"'))
+        self.assertGreater(html.index('sidebar.classList.add("is-collapsed")'), html.index('id="admin-home-sidebar"'))
+        # Nothing between the sidebar and the content: nav.css sizes the
+        # content with `.admin-home-sidebar + .content`.
+        after_nav = html[html.index("</nav>", html.index('id="admin-home-sidebar"')) + len("</nav>"):]
+        self.assertTrue(after_nav.lstrip().startswith("<main"), after_nav.lstrip()[:80])
+
     def test_star_toggle_reflected_after_favoriting(self):
         self.client.post("/admin/menu/toggle-favorite/", {"menu_key": "app.testapp"})
         response = self.client.get("/admin/testapp/book/")

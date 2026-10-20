@@ -32,15 +32,19 @@
         header.className = "admin-home-filter-header";
         var filtersLabel = i18n("filters", "Filters");
         var toggleLabel = i18n("toggleFilters", "Collapse/expand filters");
+        // Labels go in through the DOM API, not concatenated into the HTML.
         header.innerHTML =
             '<span class="admin-home-filter-title">' +
             svg("i-filter", "admin-home-filter-icon") +
-            '<span class="admin-home-filter-title-text">' + filtersLabel + "</span>" +
+            '<span class="admin-home-filter-title-text"></span>' +
             "</span>" +
-            '<button class="admin-home-filter-toggle" type="button" ' +
-            'aria-label="' + toggleLabel + '" title="' + toggleLabel + '">' +
+            '<button class="admin-home-filter-toggle" type="button">' +
             svg("i-chevron", "admin-home-filter-caret") +
             "</button>";
+        header.querySelector(".admin-home-filter-title-text").textContent = filtersLabel;
+        var toggle = header.querySelector(".admin-home-filter-toggle");
+        toggle.setAttribute("aria-label", toggleLabel);
+        toggle.setAttribute("title", toggleLabel);
         return header;
     }
 

@@ -1,0 +1,90 @@
+{% comment %}
+Applies the saved sidebar / filter panel state before the first paint.
+
+nav.js and filter_panel.js are deferred: they only run after the whole page
+has been parsed, so without this the sidebar and the filter panel were
+painted open and then animated closed on every page load (a visible "blink",
+plus a full re-layout of the results table on every animation frame).
+
+Two halves around the sidebar markup in admin/nav_sidebar.html:
+  - admin_home/_preload_head.html, BEFORE the <nav>, marks <html> with
+    `admin-home-preload` (CSS transitions off), `admin-home-nav-precollapsed`
+    and `admin-home-filter-precollapsed`, so the sidebar and the filter panel
+    are laid out at their saved width from the very first paint;
+  - this one, as the LAST CHILD of the <nav> (after its items, before the
+    changelist and its #changelist-filter are parsed), mirrors what nav.js
+    will do: sidebar
+    collapsed state, open app groups and active item. Two frames after
+    DOMContentLoaded it clears the <html> marks.
+It re-applies the <html> marks itself, so it still works on its own.
+
+It must not be placed between the </nav> and the content: nav.css sizes the
+content with `.admin-home-sidebar + .content` (adjacent sibling), and any
+element in between drops that max-width — the content then overflows the
+viewport and pushes the filter panel off screen.
+
+Idempotent: a host project may ship its own copy of this snippet (e.g. to
+support older package versions) and both can run on the same page.
+{% endcomment %}
+<script>
+(function () {
+    "use strict";
+    var root = document.documentElement;
+    root.classList.add("admin-home-preload");
+
+    function stored(key) {
+        try { return window.localStorage.getItem(key); } catch (e) { return null; }
+    }
+
+    if (stored("admin-home:filter-collapsed") !== "0") {
+        root.classList.add("admin-home-filter-precollapsed");
+    }
+
+    var sidebar = document.getElementById("admin-home-sidebar");
+    if (sidebar) {
+        var mobile = window.matchMedia && window.matchMedia("(max-width: 767px)").matches;
+        if (mobile || stored("admin-home:nav-collapsed") === "1") {
+            sidebar.classList.add("is-collapsed");
+        }
+
+        var path = window.location.pathname;
+        var best = null;
+        var bestLen = -1;
+        var items = sidebar.querySelectorAll(".admin-home-nav-item[data-url]");
+        for (var i = 0; i < items.length; i++) {
+            var url = items[i].getAttribute("data-url");
+            if (url && path.indexOf(url) === 0 && url.length > bestLen) {
+                best = items[i];
+                bestLen = url.length;
+            }
+        }
+        if (best) best.classList.add("is-active");
+
+        var groups = sidebar.querySelectorAll(".admin-home-nav-group");
+        for (var g = 0; g < groups.length; g++) {
+            var group = groups[g];
+            var key = group.getAttribute("data-app");
+            var open = (key && stored("admin-home:nav-group:" + key) === "open") ||
+                (best !== null && group.contains(best));
+            if (!open) continue;
+            group.setAttribute("aria-collapsed", "false");
+            var header = group.querySelector(".admin-home-nav-group-header");
+            if (header) header.setAttribute("aria-expanded", "true");
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Two frames: let the deferred scripts' final state paint before
+        // transitions come back on.
+        window.requestAnimationFrame(function () {
+            window.requestAnimationFrame(function () {
+                root.classList.remove(
+                    "admin-home-preload",
+                    "admin-home-nav-precollapsed",
+                    "admin-home-filter-precollapsed"
+                );
+            });
+        });
+    });
+})();
+</script>
