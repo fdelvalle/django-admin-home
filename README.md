@@ -191,6 +191,10 @@ ADMIN_HOME_CUSTOM_PAGES = [
 # How many "most accessed" cards to show on the home page (default 8).
 ADMIN_HOME_MAX_MOST_ACCESSED = 8
 
+# Show the "Hello, <name>" welcome banner at the top of the home page
+# (default True). Set to False to start the page at the favorites.
+ADMIN_HOME_SHOW_WELCOME_BANNER = True
+
 # Native label / sprite icon per language code, for the user menu's
 # language switcher. A language missing here still works, with Django's
 # own label and the bundled "globe" icon. The package ships no flag

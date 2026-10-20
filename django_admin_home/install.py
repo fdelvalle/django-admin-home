@@ -15,6 +15,10 @@ def _max_most_accessed() -> int:
     return getattr(settings, "ADMIN_HOME_MAX_MOST_ACCESSED", 8)
 
 
+def _show_welcome_banner() -> bool:
+    return bool(getattr(settings, "ADMIN_HOME_SHOW_WELCOME_BANNER", True))
+
+
 def _favorite_keys(user):
     from django_admin_home.models import MenuFavorite
 
@@ -113,6 +117,7 @@ def install(site: admin.AdminSite | None = None) -> None:
 
     def index(request, extra_context=None):
         extra_context = extra_context or {}
+        extra_context["admin_home_show_welcome_banner"] = _show_welcome_banner()
         try:
             menu_tree, favorites = _menu_tree_for_request(site, request)
             menu_index = flatten_menu_items(menu_tree)

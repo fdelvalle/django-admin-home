@@ -32,6 +32,13 @@ class StaticAssetsExistTests(SimpleTestCase):
         self.assertIn('id="i-filter"', sprite)
         self.assertIn('id="i-chevron"', sprite)
 
+    def test_filter_chevron_overrides_django_arrow_glyph(self):
+        # Django's changelists.css loads later and sets content: '→'/'↓' on the
+        # same summary::before; the package rule must win in both states.
+        css = (STATIC_DIR / "css" / "filter_panel.css").read_text()
+        self.assertIn("#changelist #changelist-filter details > summary::before", css)
+        self.assertIn("#changelist #changelist-filter details[open] > summary::before", css)
+
     def test_filter_facets_default_closed_and_remember_state(self):
         js = (STATIC_DIR / "js" / "filter_panel.js").read_text()
         self.assertIn("data-filter-title", js)

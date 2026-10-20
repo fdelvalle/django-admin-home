@@ -58,6 +58,18 @@ class IndexViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("admin-home-empty", response.content.decode())
 
+    def test_welcome_banner_shown_by_default(self):
+        response = self.client.get("/admin/")
+        self.assertIn("admin-home-hero", response.content.decode())
+
+    def test_welcome_banner_can_be_disabled(self):
+        with self.settings(ADMIN_HOME_SHOW_WELCOME_BANNER=False):
+            response = self.client.get("/admin/")
+        html = response.content.decode()
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("admin-home-hero", html)
+        self.assertIn("admin-home-wrap", html)  # the rest of the home still renders
+
 
 class SidebarRenderTests(TestCase):
     """Full-stack check: sidebar renders on a real changelist page."""

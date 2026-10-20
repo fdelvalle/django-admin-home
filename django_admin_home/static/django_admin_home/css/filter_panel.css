@@ -170,6 +170,15 @@
     order: 2;
 }
 #changelist-filter details[open] > summary::before { transform: rotate(45deg); }
+/* Django's changelists.css (loaded after this file, by change_list.html) puts
+   its own '→' / '↓' glyph in this same ::before; inside the rotated box the
+   glyph leaks out as a stray line at one tip. The #changelist prefix wins on
+   specificity in both states, whatever the load order. */
+#changelist #changelist-filter details > summary::before,
+#changelist #changelist-filter details[open] > summary::before {
+    content: "";
+    font-size: 0;
+}
 
 /* Same treatment for filters still using <h3> (older Django styles). */
 #changelist-filter h3 {

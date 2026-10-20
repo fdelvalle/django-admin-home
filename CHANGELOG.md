@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.1
+
+- Added the `ADMIN_HOME_SHOW_WELCOME_BANNER` setting (default `True`) to
+  hide the "Hello, <name>" banner at the top of the home page.
+- Fixed a stray line at one tip of the changelist filter chevron. Django's
+  `changelists.css`, which loads after `filter_panel.css`, puts its own
+  `→`/`↓` glyph in the same `summary::before`, and the glyph leaked out of
+  the rotated chevron box.
+
 ## 0.4.0
 
 - Declared support for Django 3.2 through 6.0 and Python 3.10 or newer.

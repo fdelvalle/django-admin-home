@@ -7,6 +7,8 @@ django-admin-home dashboard.
 Extra context (from django_admin_home.install.index):
   - admin_home_most_accessed: [{key,name,icon,url,parent,access_count}]
   - admin_home_favorite_cards: [{key,name,icon,url,parent}]
+  - admin_home_show_welcome_banner: settings.ADMIN_HOME_SHOW_WELCOME_BANNER
+    (default True; only an explicit False hides the "Hello, <name>" banner)
 {% endcomment %}
 
 {% block extrastyle %}{{ block.super }}
@@ -24,12 +26,14 @@ Extra context (from django_admin_home.install.index):
      data-toggle-favorite-url="{% url 'admin:admin_home_toggle_favorite' %}"
      data-track-access-url="{% url 'admin:admin_home_track_access' %}">
 
+    {% if admin_home_show_welcome_banner is not False %}
     <header class="admin-home-hero">
         <div class="admin-home-hero-text">
             <h1>{% blocktrans with name=request.user.first_name|default:request.user.get_username %}Hello, {{ name }}{% endblocktrans %}</h1>
             <p>{% trans "Welcome back. Here are your most used shortcuts and favorites." %}</p>
         </div>
     </header>
+    {% endif %}
 
     {% if admin_home_favorite_cards %}
     <section class="admin-home-section admin-home-favorites-section">
